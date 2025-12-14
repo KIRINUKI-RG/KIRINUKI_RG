@@ -316,10 +316,23 @@ app.get('/api/get-masks-by-layers', (req, res) => {
 
             let searchName = partName; 
 
-            const aliasFileName = `mask_${traitType.toLowerCase().replace(/\s/g, '_')}_aliases.json`;
-            const aliasFilePath = path.join(__dirname, aliasFileName);
+            // ▼▼▼ JSONファイルを大文字小文字無視で探す ▼▼▼
+            const targetAliasName = `mask_${traitType.toLowerCase().replace(/\s/g, '_')}_aliases.json`;
+            let aliasFilePath = null;
 
-            if (fs.existsSync(aliasFilePath)) {
+            try {
+                // ルートディレクトリのファイル一覧を取得して探す
+                const rootFiles = fs.readdirSync(__dirname);
+                const actualAliasFile = rootFiles.find(f => f.toLowerCase() === targetAliasName);
+                if (actualAliasFile) {
+                    aliasFilePath = path.join(__dirname, actualAliasFile);
+                }
+            } catch (e) {
+                console.error('エイリアスファイル探索エラー:', e);
+            }
+
+            if (aliasFilePath && fs.existsSync(aliasFilePath)) {
+
                 try {
                     const aliasData = JSON.parse(fs.readFileSync(aliasFilePath, 'utf8'));
                     
