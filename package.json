@@ -1,0 +1,17 @@
+{
+  "name": "kirinuki-rg",
+  "version": "1.0.0",
+  "description": "A tool to process NFT images for KRG.",
+  "main": "KIRINUKI_RG.js",
+  "scripts": {
+    "start": "node KIRINUKI_RG.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

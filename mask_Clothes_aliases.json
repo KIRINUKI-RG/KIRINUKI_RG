@@ -1,0 +1,335 @@
+{
+  "Abstract Denim Jacket": [
+    "Blue Abstract Denim Jacket",
+    "Red Abstract Denim Jacket"
+  ],
+  "Baseball Uniform": [
+    "Baseball Uniform"
+  ],
+  "Basketball Jersey": [
+    "Basketball Jersey"
+  ],
+  "C2 Tech": [
+    "C2 Tech"
+  ],
+  "C2 Techs": [
+    "C2 Tech Blue",
+    "C2 Tech Blue Camo",
+    "C2 Tech Camo",
+    "C2 Tech Gray",
+    "C2 Tech Khaki",
+    "C2 Tech Purple Camo",
+    "C2 Tech Red",
+    "C2 Tech White"
+  ],
+  "Checkered Work Shirt": [
+    "Beige Checkered Work Shirt",
+    "Blue Checkered Work Shirt",
+    "Dark Blue Checkered Work Shirt",
+    "Dark Checkered Work Shirt",
+    "Green Checkered Work Shirt",
+    "Khaki Checkered Work Shirt",
+    "Pink Checkered Work Shirt",
+    "Purple Checkered Work Shirt",
+    "Red Checkered Work Shirt"
+  ],
+  "Cheongsam": [
+    "Cheongsam Black",
+    "Cheongsam Blue",
+    "Cheongsam Blue Green",
+    "Cheongsam Dark Blue",
+    "Cheongsam Green",
+    "Cheongsam Orange",
+    "Cheongsam Purple",
+    "Cheongsam Red"
+  ],
+  "Dark Future Suit": [
+    "Dark Future Suit Black",
+    "Dark Future Suit Blue",
+    "Dark Future Suit Green",
+    "Dark Future Suit Purple",
+    "Dark Future Suit Red"
+  ],
+  "Denim Jacket": [
+    "Black Denim Jacket",
+    "Brown Denim Jacket",
+    "Denim Jacket",
+    "Green Denim Jacket",
+    "Khaki Denim Jacket",
+    "Purple Denim Jacket",
+    "Rigid Denim Jacket",
+    "White Denim Jacket"
+  ],
+  "EMU Space Suit": [
+    "EMU Space Suit"
+  ],
+  "Female Cardigan": [
+    "Female Cardigan"
+  ],
+  "Firefighter": [
+    "Firefighter"
+  ],
+  "Futuristic Powered Suits": [
+    "Futuristic Powered Suits Purple",
+    "Futuristic Powered Suits Red",
+    "Futuristic Powered Suits Yellow"
+  ],
+  "Gondum T-Shirt": [
+    "Azuki Gondum T-Shirt",
+    "Gray Gondum T-shirt",
+    "White Gondum T-Shirt"
+  ],
+  "Gothic Lolita": [
+    "Gothic Lolita"
+  ],
+  "Hoodie": [
+    "Aqua Dust Hoodie",
+    "Black View Hoodie",
+    "Blue Hoodie",
+    "Brown Hoodie",
+    "Camo Brown Hoodie",
+    "Cyber Black Hoodie",
+    "Dark Blue Hoodie",
+    "Dark Brown Hoodie",
+    "Dark Gray Hoodie",
+    "Dark Green Hoodie",
+    "Dark Purple Hoodie",
+    "Deep Blue Hoodie",
+    "Gray Hoodie",
+    "JAPALO Gray Hoodie",
+    "JAPALO Wine Hoodie",
+    "Light Gray Hoodie",
+    "Light Green Hoodie",
+    "Mocha Gray Hoodie",
+    "Neon Green Hoodie",
+    "Olive Hoodie",
+    "Orange Dust Hoodie",
+    "Orange Hoodie",
+    "Pink Hoodie",
+    "Purple Hoodie",
+    "Red Square Black Hoodie",
+    "White Blue Hoodie",
+    "White Dust Hoodie",
+    "White Green Hoodie",
+    "Yellow Dust Hoodie",
+    "Yellow Green Hoodie"
+  ],
+  "Black Hoodie":  [
+      "Black Hoodie",
+      "White Hoodie"
+  ],
+  "Hospital Gown": [
+    "Hospital Gown"
+  ],
+  "Idol": [
+    "Idol Blue",
+    "Idol Pink",
+    "Idol Yellow"
+  ],
+    "Idol Purple": [
+    "Idol Purple"
+  ],
+  "Japanese Wasou": [
+    "Japanese Wasou Azuki",
+    "Japanese Wasou Gold",
+    "Japanese Wasou Green",
+    "Japanese Wasou Purple",
+    "Japanese Wasou Red"
+  ],
+  "Light Future Suit": [
+    "Light Future Suit Blue"
+  ],
+  "MA-1 Flight Jacket": [
+    "MA-1 Black Flight Jacket",
+    "MA-1 Blue Flight Jacket",
+    "MA-1 Brown Flight Jacket",
+    "MA-1 Chaos Flight Jacket",
+    "MA-1 Deep Blue Flight Jacket",
+    "MA-1 Green Flight Jacket",
+    "MA-1 Khaki Flight Jacket",
+    "MA-1 Mono Flight Jacket",
+    "MA-1 Moth Flight Jacket",
+    "MA-1 Purple Flight Jacket",
+    "MA-1 Silver Flight Jacket",
+    "MA-1 White Flight Jacket",
+    "MA-1 Yellow Flight Jacket",
+    "MA-1 colorful Flight Jacket"
+  ],
+  "Maid": [
+    "Maid"
+  ],
+  "Male Cardigan": [
+    "Male Cardigan"
+  ],
+  "Metal T-Shirt": [
+    "Black Metal T-Shirt",
+    "Red Metal T-Sshirt",
+    "Yellow Metal T-Shirt"
+  ],
+  "Mods Coat": [
+    "Black Dust Mods Coat",
+    "Black Mods Coat",
+    "Blue Mods Coat",
+    "Brown Mods Coat",
+    "Gray Mods Coat",
+    "Green Mods Coat",
+    "Khaki Mods Coat",
+    "Military Mods Coat",
+    "Neon Mods Coat",
+    "Purple Mods Coat",
+    "Red Mods Coat",
+    "White Mods Coat",
+    "Yellow Mods Coat"
+  ],
+  "Off Shoulder Swimsuit": [
+    "Off Shoulder Swimsuit"
+  ],
+  "Off White T-Shirt": [
+    "Off White T-Shirt"
+  ],
+  "Outer Shirt": [
+    "Black Purple Outer Shirt",
+    "White Black Outer Shirt",
+    "White Purple Outer Shirt"
+  ],
+  "Rider Jacket": [
+    "Rider Jacket"
+  ],
+  "Riders Jacket": [
+    "Black Riders Jacket",
+    "Blue Gray Rider Jacket",
+    "Brown Rider Jacket"
+  ],
+  "SF Dress": [
+    "Green SF Dress",
+    "SF Mono Dress",
+    "SF Purple Dress",
+    "Sky Blue SF Dress",
+    "White SF Dress"
+  ],
+    "Black SF Dress": [
+    "Red SF Dress",
+    "Black SF Dress"
+  ],
+  "Sailor School Uniform": [
+    "Sailor School Uniform"
+  ],
+  "School Female Blazer": [
+    "School Female Blazer"
+  ],
+  "School Male Blazer": [
+    "School Male Blazer"
+  ],
+  "Sexy Knit": [
+    "Sexy Knit"
+  ],
+  "Smoke T-Shirt": [
+    "Black Smoke T-Shirt",
+    "Purple Smoke T-Shirt",
+    "Yellow Smoke T-Shirt"
+  ],
+  "Soccer Jersey": [
+    "Soccer Jersey"
+  ],
+  "Striped T-Shirt": [
+    "Azuki Striped T-Shirt",
+    "Black Striped T-Shirt",
+    "Khaki Striped T-Shirt",
+    "Purple Striped T-Shirt"
+  ],
+  "Student": [
+    "Student"
+  ],
+  "Suit": [
+    "Black Suit",
+    "Purple Suit"
+  ],
+  "Super Hoodie": [
+    "Crazy Gray Super Hoodie",
+    "Crazy Blue Super Hoodie",
+    "Crazy Red Super Hoodie",
+    "Deep Blue Super Hoodie",
+    "Purple Super Hoodie",
+    "Red Super Hoodie"
+  ],
+    "Super Hoodie Exception": [
+    "Deep Blue Super Hoodie"
+  ],
+  "Sweatshirt": [
+    "Black Sweatshirt",
+    "Blue Sweatshirt",
+    "Brown Sweatshirt",
+    "Green Sweatshirt",
+    "Purple Sweatshirt",
+    "Wine Sweatshirt",
+    "Yellow Sweatshirt"
+  ],
+  "Syogari": [
+    "Syogari Beige",
+    "Syogari Black",
+    "Syogari Blue",
+    "Syogari Dark Blue",
+    "Syogari Gray",
+    "Syogari Green",
+    "Syogari Pink",
+    "Syogari Red",
+    "Syogari White",
+    "Syogari Zirai"
+  ],
+  "T-Shirt": [
+    "Black T-Shirt",
+    "Khaki T-Shirt",
+    "White T-Shirt"
+  ],
+  "Tactical": [
+    "Tactical"
+  ],
+  "Terra 58 T-Shirt": [
+    "Blue Terra 58 T-Shirt",
+    "Purple Terra 58 T-Shirt",
+    "Sky Blue Terra 58 T-Shirt"
+  ],
+  "Torn Outer Shirt": [
+    "Torn Black Green Outer Shirt",
+    "Torn Black Outer Shirt",
+    "Torn Black Red Outer Shirt",
+    "Torn Black White Outer Shirt",
+    "Torn Dark Khaki Outer Shirt",
+    "Torn White Green Outer Shirt",
+    "Torn White Khaki Outer Shirt",
+    "Torn White Outer Shirt",
+    "Torn White Red Outer Shirt"
+  ],
+  "Torn Shirt": [
+    "Torn Purple Shirt",
+    "Torn Red Shirt",
+    "Torn White Shirt"
+  ],
+  "Town T-Shirt": [
+    "Black Town T-Shirt",
+    "Gray Town T-shirt",
+    "White Town T-Shirt"
+  ],
+  "Trench Coat": [
+    "Black Trench Coat",
+    "Blue Flower Trench Coat",
+    "Blue Trench Coat",
+    "Gray Flower Trench Coat",
+    "Green Trench Coat",
+    "Pink Flower Trench Coat",
+    "Red Trench Coat",
+    "Yellow Flower Trench Coat"
+  ],
+  "Beige Trench Coat": [
+    "Beige Trench Coat"
+  ],
+  "White Future Suit": [
+    "White Future Suit Blue",
+    "White Future Suit Red"
+  ],
+  "Work Shirt": [
+    "Black Work Shirt",
+    "Sea Nymph Work Shirt",
+    "Yellow Work Shirt"
+  ]
+}

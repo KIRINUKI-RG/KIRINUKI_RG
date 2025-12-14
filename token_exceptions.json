@@ -1,0 +1,367 @@
+{
+  "7": [
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Hair and Hat",
+      "layer": "head_layer2",
+      "url": "/assets/Exception/head_layer2_Inverted_Bob_7.png"
+    },
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Under Hair",
+      "layer": "head_layer1",
+      "url": "/assets/Exception/head_layer1_Short_Wavy_7.png"
+    }
+  ],
+  "8": {
+    "type": "FORCE_TRAIT",
+    "trait_type": "Face Accessories",
+    "value": "Face Shiled Black"
+  },
+  "93": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Exception/head_layer1_Single_Ponytail_93.png"
+  },
+  "161": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Head/head_layer3_Dog_Ears.png"
+  },
+  "251": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Head/head_layer3_Maid_Band.png"
+  },
+  "280": {
+    "type": "SKIP_TRAIT",
+    "trait_type": "Hair and Hat"
+  },
+  "357": {
+    "type": "ADD_MASK",
+    "layer": "head_layer1",
+    "url": "/assets/Exception/head_layer1_Male_cover.png",
+    "purpose": "face_clipping"
+  },
+  "479": {
+    "type": "SKIP_TRAIT",
+    "trait_type": "Head"
+  },
+  "489": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "779": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "881": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "960": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "961": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "982": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "1016": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Long_Wavy.png"
+  },
+  "1041": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Long_Wavy.png"
+  },
+  "1182": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "1215": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Head/head_layer3_Maid_Band.png"
+  },
+  "1268": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Long_Wavy.png"
+  },
+  "1489": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "1763": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "1805": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Head/head_layer3_Cat_Ears.png"
+  },
+  "1810": {
+    "type": "ADD_MASK",
+    "layer": "head_layer1",
+    "url": "/assets/Exception/head_layer1_Female_cover.png",
+    "purpose": "face_clipping"
+  },
+  "1832": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "1989": [
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Hair and Hat",
+      "layer": "head_layer2",
+      "url": "/assets/Exception/head_layer2_Mekakure_with_Bucket_Hat_1989.png"
+    },
+    {
+      "type": "SKIP_TRAIT",
+      "trait_type": "Head"
+    }
+  ],
+  "2115": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Face Accessories",
+    "layer": "head_layer3",
+    "url": "/assets/Exception/head_layer3_Power_Helmet_2115.png"
+  },
+  "2121": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "2141": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Exception/head_layer2_Messy_Short_2141.png"
+  },
+  "2149": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Head/head_layer3_Headphones.png"
+  },
+  "2331": {
+    "type": "FORCE_TRAIT",
+    "trait_type": "Backparts 01",
+    "value": "IV"
+  },
+  "2454": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "2464": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+    "2536": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Head/head_layer3_Cat_Ears.png"
+  },
+  "2572": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "2583": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "2629": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Long_Curtain.png"
+  },
+  "2686": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Long_Wavy.png"
+  },
+  "2744": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "2846": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Long_Wavy.png"
+  },
+  "2941": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "2995": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "3012": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Clothes",
+    "layer": "head_layer2",
+    "url": "/assets/Exception/body_layer1_Student_3012.png"
+  },
+  "3051": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Body Layer",
+    "layer": "body_layer1",
+    "url": "/assets/Exception/body_layer1_Smartphone_Strap.png"
+  },
+  "3226": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "3309": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "3384": {
+    "type": "ADD_MASK",
+    "layer": "head_layer3",
+    "url": "/assets/Exception/head_layer3_Bucket_Hat_3384.png"
+  },
+  "3426": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "3586": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "3645": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "3724": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Long_Wavy.png"
+  },
+  "3751": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Under Hair",
+    "layer": "head_layer1",
+    "url": "/assets/Under Hair/head_layer1_Odango.png"
+  },
+  "3805": [
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Clothes",
+      "layer": "body_layer1",
+      "url": "/assets/Exception/body_layer1_Maid_3805.png"
+    },
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Under Hair",
+      "layer": "head_layer1",
+      "url": "/assets/Exception/head_layer1_Mendako_3805.png"
+    },
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Hair and Hat",
+      "layer": "head_layer2",
+      "url": "/assets/Exception/head_layer2_Double_Tendrils_3805.png"
+    },
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Head",
+      "layer": "head_layer3",
+      "url": "/assets/Exception/head_layer3_Maid_Band_3805.png"
+    }
+  ],
+  "3818": {
+    "type": "OVERRIDE_RECOVERY",
+    "trait_type": "Body Layer",
+    "layer": "recovery_layer2_body",
+    "url": "/recovery_assets/Exception/recovery_layer2_Multicolor_Scarf_Black_3818.png"
+  },
+  "3863": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Hair and Hat",
+    "layer": "head_layer2",
+    "url": "/assets/Hair and Hat/head_layer2_Natural_Curl.png"
+  },
+  "3986": [
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Clothes",
+      "layer": "body_layer1",
+      "url": "/assets/Exception/body_layer1_Suit_3986.png"
+    },
+    {
+      "type": "OVERRIDE_MASK",
+      "trait_type": "Under Hair",
+      "layer": "head_layer1",
+      "url": "/assets/Exception/head_layer1_Flipped_3986.png"
+    }
+  ],
+  "3997": {
+    "type": "OVERRIDE_MASK",
+    "trait_type": "Clothes",
+    "layer": "body_layer1",
+    "url": "/assets/Exception/body_layer1_Tactical_3997.png"
+  }
+}

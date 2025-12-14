@@ -1,0 +1,73 @@
+{
+  "Cat Tail": [
+    "Black Cat Tail",
+    "Blue Cat Tail",
+    "Blue Green Cat Tail",
+    "Gold Cat Tail",
+    "Gray Cat Tail",
+    "Green Cat Tail",
+    "Ice Gray Cat Tail",
+    "Khaki Cat Tail",
+    "Pink Cat Tail",
+    "Purple Cat Tail",
+    "Red Cat Tail",
+    "Violet Cat Tail",
+    "White Cat Tail",
+    "Yellow Brown Cat Tail"
+  ],
+  "Dog Tail": [
+    "Black Dog Tail",
+    "Blue Dog Tail",
+    "Blue Green Dog Tail",
+    "Gray Dog Tail",
+    "Green Dog Tail",
+    "Ice Gray Dog Tail",
+    "Khaki Dog Tail",
+    "Pink Brown Dog Tail",
+    "Pink Dog Tail",
+    "Purple Dog Tail",
+    "Violet Dog Tail",
+    "White Ash Dog Tail",
+    "White Dog Tail",
+    "Yellow Brown Dog Tail"
+  ],
+  "Capybara": [
+    "Dark Brown Capybara"
+  ],
+  "Light Brown Capybara": [
+    "Light Brown Capybara"
+  ],
+  "Mechanical Arm": [
+    "Dark Khaki Mechanical Arm",
+    "Military Green Mechanical Arm",
+    "Navy Mechanical Arm"
+  ],
+  "Onryo": [
+    "Onryo",
+    "Onryo Invert"
+  ],
+  "Companion Robot": [
+    "Companion Robot"
+  ],
+  "Dragontail": [
+    "Dragontail"
+  ],
+  "Electrocardiogram": [
+    "Electrocardiogram"
+  ],
+  "Explosion": [
+    "Explosion"
+  ],
+  "Gokou": [
+    "Gokou"
+  ],
+  "IV": [
+    "IV"
+  ],
+  "Stars": [
+    "Stars"
+  ],
+  "Wakusei": [
+    "Wakusei"
+  ]
+}
