@@ -11,7 +11,7 @@ let fetch;
 })();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // ▼▼▼ 4K画像を受け取るため、サイズ制限を50MBに ▼▼▼
 app.use(express.json({ limit: '50mb' }));
