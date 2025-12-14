@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>KIRINUKI RG</title>
+    <title>KIRINUKI RG for PC</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1336,7 +1336,7 @@
     
     <div class="container">
         <h1 id="appTitle">
-            <span data-lang-jp="KRG 透過処理ツール" data-lang-en="KRG Masking Tool">KRG 透過処理ツール</span>
+            <span data-lang-jp="KIRINUKI RG for PC" data-lang-en="KIRINUKI RG for PC">KRG 透過処理ツール</span>
     
             <video
                 class="logo-video-dark"
@@ -1627,8 +1627,8 @@
                     data-lang-alt-en="Help Image"
                 >
                 <h2 data-lang-jp="KIRINUKI RG へようこそ" data-lang-en="Welcome to KIRINUKI RG">KIRINUKI RG へようこそ</h2>
-                <p data-lang-jp="KIRINUKI RGは、KRGの二次的な活用を支援するための画像切り抜きツールです。以下の5つのStepで、簡単に切り抜き画像を作成できます。"
-                   data-lang-en="KIRINUKI RG is an image masking tool to support the secondary use of KRG. You can easily create masked images in the following 5 steps.">
+                <p data-lang-jp="KIRINUKI RGは、KRGの二次的な活用を支援するためのPC専用画像切り抜きツールです。以下の5つのStepで、簡単に切り抜き画像を作成できます。"
+                   data-lang-en="KIRINUKI RG is a PC-only image masking tool to support the secondary use of KRG. You can easily create masked images in the following 5 steps.">
                    KIRINUKI RGは、KRGの二次的な活用を支援するための画像切り抜きツールです。以下の5つのStepで、簡単に高解像度の切り抜き画像を作成できます。
                 </p>
 
@@ -1692,22 +1692,35 @@
                 <h3 data-lang-jp="FAQ" data-lang-en="FAQ">FAQ</h3>
                 <p data-lang-jp="Q. <br>サイトにアクセスしたときに、変な画面が表示される。<br>
                     A. <br>これはサーバー再起動時の待機画面であり、仕様です。このWebアプリはRenderという無料サーバーを利用しています。サーバー運用最適化のため、最終アクセスから約15分経過すると自動的にサーバーが閉じ、新規アクセスに対してはサーバー起動待機画面が表示されるようになります。
+                    
+                    <br><br>Q.<br>スマホで利用を試みたが、エラーが出たり処理が進まなかったりした。
+                    <br>A. <br>本ツールはPC専用です。スマホでは正常に動作しませんので、PCでの利用をお願いいたします。
+
                     <br><br>Q. <br>トークンID取得が完了したのに、KRG画像が表示されない。
                     <br>A. GPUの処理能力によっては正しく進行しない場合があります。十分なGPU処理能力を確保したうえで、もう一度トークンID取得ボタンをクリックしてください。
+                    
                     <br><br>Q. <br>特定の切り抜きモードを選択したのに、異なった切り抜き範囲が表示される。
                     <br>A. <br>GPUの処理能力によっては、切り抜き範囲を指定するレイヤー処理が正しく完了しない場合があります。十分なGPU処理能力を確保したうえで、もう一度切り抜きモードを選択してください。
+                    
                     <br><br>Q. <br>切り抜き画像の輪郭線に、背景の色が映り込んでいる。
                     <br>A. <br>仕様です。KRGの作品は不可逆的な圧縮を受けていると考えられ、黒い輪郭線の縁には背景の色がランダムな強さで映り込んでいます。できるだけ映り込みの少ない範囲を切り抜くよう設計しましたが、圧縮のされ方によっては背景の色が強く映り込む場合があります。また、輪郭線と塗りつぶしの範囲が一致しない領域や、そもそも輪郭線が存在しない領域もあるため、境界線の切り抜き方には若干のブレがあります。
+                    
                     <br><br>Q. <br>とあるパーツの切り抜き範囲がずれている。
                     <br>A. <br>使用されているパーツ名が同じでも、パーツの描画範囲が異なっている例が稀にあります。これまでに確認できたものについては対応済みですが、対応できていないパーツである可能性があります。
                     <br><br><br><br>
                     "  
                     data-lang-en="Q. <br>I see a weird screen when I access the site.
                     <br>A. <br>This is a waiting screen for the server to restart, which is by design. This web app uses a free server (Render). To optimize server operation, the server automatically shuts down after about 20 minutes of inactivity. When new access occurs, this server startup waiting screen will be displayed.
+                    
+                    <br><br>Q.<br>I tried to use it on my smartphone, but I got an error or the process didn't proceed.
+                    <br>A. <br>This tool is PC-only. It does not function properly on smartphones, so please use a PC.
+
                     <br><br>Q. <br>The KRG image doesn't appear even after fetching the Token ID.
                     <br>A. <br>Processing may not proceed correctly depending on your GPU's capabilities. Please ensure you have sufficient GPU power and try clicking the Fetch Token Data button again.
+                    
                     <br><br>Q. <br>The background color is bleeding into the outline of the masked image.
                     <br>A. <br>This is by design. KRG artworks appear to have undergone lossy compression, causing background colors to randomly bleed into the edges of black outlines. While the tool is designed to mask the cleanest area possible, strong color bleeding may occur depending on the compression. Additionally, there are areas where outlines do not match the fill, or where no outline exists, causing slight variations in the masking.
+                    
                     <br><br>Q. <br>The mask area for a certain part is misaligned.
                     <br>A. <br>In rare cases, parts with the same name may have different drawing areas. We have addressed the cases confirmed so far, but it's possible this is a part we have not yet accounted for.
                     <br><br><br><br>
