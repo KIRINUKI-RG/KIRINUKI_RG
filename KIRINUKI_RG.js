@@ -280,15 +280,37 @@ app.get('/api/get-masks-by-layers', (req, res) => {
 
             let partName = trait.value.trim(); 
             let traitType = trait.trait_type;
-            let genreDir;
-            
+            let genreDir; // 最終的に使うフォルダパス
+
+            // ▼▼▼ 大文字小文字を無視してフォルダを探す関数 ▼▼▼
+            const findDirCaseInsensitive = (baseDir, targetName) => {
+                try {
+                    if (!fs.existsSync(baseDir)) return null;
+                    const entries = fs.readdirSync(baseDir, { withFileTypes: true });
+                    // 1. 完全一致があればそれを返す
+                    const exactMatch = entries.find(e => e.isDirectory() && e.name === targetName);
+                    if (exactMatch) return path.join(baseDir, exactMatch.name);
+                    
+                    // 2. なければ大文字小文字無視で探す
+                    const targetLower = targetName.toLowerCase();
+                    const fuzzyMatch = entries.find(e => e.isDirectory() && e.name.toLowerCase() === targetLower);
+                    return fuzzyMatch ? path.join(baseDir, fuzzyMatch.name) : null;
+                } catch (e) {
+                    console.error('フォルダ探索エラー:', e);
+                    return null;
+                }
+            };
+
             if (isC2TechException && traitType === 'Face') {
                 genreDir = path.join(assetsDir, 'Exception');
             } else {
-                genreDir = path.join(assetsDir, traitType);
+                // ここを変更: 単純結合ではなく、実在するフォルダ名を探しに行く
+                genreDir = findDirCaseInsensitive(assetsDir, traitType);
             }
 
-            if (!fs.existsSync(genreDir)) {
+            // 見つからなければスキップ
+            if (!genreDir) {
+                // console.log(`フォルダが見つかりません: ${traitType}`); // デバッグ用
                 return;
             }
 
