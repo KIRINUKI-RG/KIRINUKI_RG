@@ -1722,6 +1722,7 @@
                 <h2 data-lang-jp="Step 1: トークンID入力" data-lang-en="Step 1: Enter Token ID">Step 1: トークンID入力</h2>
                 <p data-lang-jp="このStepでは、入力されたトークンIDをもとにKRGのパーツ情報を読み込みます。" 
                 data-lang-en="In this step, the KRG's part information is loaded based on the entered Token ID."></p>
+                <br>
                 <h3 data-lang-jp="a. KRGのトークンIDの確認" data-lang-en="a. KRG Token ID Confirmation"></h3>
                 <p data-lang-jp="OpenseaやMetaMask等、保有しているKRGを確認できるサイトでトークンIDを確認します。
                                 <br>＜警告＞
@@ -1742,6 +1743,7 @@
 				data-lang-alt-jp="ヘルプ用画像"
 				data-lang-alt-en="Help Image"
 				>
+                <br>
                 <h3 data-lang-jp="b. トークンデータの取得" data-lang-en="b. Fetching Token Data"></h3>
                 <p data-lang-jp="トークンIDを半角数字で入力し、[トークンデータ取得] をクリック。
                                 <br>GPU負荷を低減したい場合は [軽量モードで取得] をクリック。" 
@@ -1777,6 +1779,7 @@
 				data-lang-alt-jp="ヘルプ用画像"
 				data-lang-alt-en="Help Image"
 				>
+                <br>
                 <h3 data-lang-jp="切り抜き範囲の選択" data-lang-en="Select Masking Area"></h3>
                 <p data-lang-jp="[頭系]
                 <br>人物の頭部に関連するパーツを残して切り抜きます。
@@ -1804,14 +1807,14 @@
 				data-lang-alt-jp="ヘルプ用画像"
 				data-lang-alt-en="Help Image"
 				>
-
+                <br>
                 <h3 data-lang-jp="切り抜きモードの選択" data-lang-en="Mask Mode Selection"></h3>
                 <p data-lang-jp="[切り抜き]
                 <br>指定された切り抜き範囲を忠実に透過処理します。一部のパーツは不自然な切り抜かれ方をしますが、補完切り抜きやマニュアル切り抜きで対応できます。"
                 data-lang-en="[Masking]
                 <br>Faithfully masks the specified area. Some parts may be clipped unnaturally, but this can be addressed with Recovery Masking or Manual Masking.
                 "></p>
-
+                <br>
                 <p data-lang-jp="[補完切り抜き]
                 <br>通常の切り抜き処理に加え、実用性を欠くような切り抜かれ方をされた一部のパーツを補完します。" 
                 data-lang-en="[Recovery Masking]
@@ -1849,7 +1852,7 @@
 				data-lang-alt-jp="ヘルプ用画像"
 				data-lang-alt-en="Help Image"
 				>
-                
+                <br>
                 <h3 data-lang-jp="ヘアノイズ除去" data-lang-en="Stray Hair Fix"></h3>
                 <p data-lang-jp="ONにすると、体で切り抜かれて不自然に残った肩から下側の髪の毛を自動で削除します。一部のパーツを使用している一部のKRGにのみ有効です。肩から上の髪の毛はStep3で削除してください。" 
                 data-lang-en="When enabled, this automatically removes unnatural hair below the shoulders caused by body masking. This feature is only effective for specific KRGs using certain parts. Please use Step 3 to remove any hair above the shoulders."></p>
@@ -1859,6 +1862,7 @@
                 <p data-lang-jp="このStepでは、不自然な切り抜かれ方をした部分に図形を重ねて、手動で切り抜き処理できます。" 
                 data-lang-en="In this step, you can manually mask areas that were clipped unnaturally by overlaying shapes.
                 ">このStepでは、不自然な切り抜かれ方をした部分に図形を重ねて、手動で切り抜き処理できます。</p>
+                <br>
                 <h3 data-lang-jp="a.図形の配置" data-lang-en="a. Placing Shapes"></h3>
                 <p data-lang-jp="[図形を配置]ボタンをクリックした後、KRG上の配置したい場所をクリックし、ベースとなる図形を配置します。" 
                 data-lang-en="After clicking the [Add Shape] button, click on the KRG canvas where you want to place the shape to add the base shape."></p>
@@ -1873,6 +1877,7 @@
 				data-lang-alt-jp="ヘルプ用画像"
 				data-lang-alt-en="Help Image"
 				>
+                <br>
                 <h3 data-lang-jp="b.図形を変形" data-lang-en="b. Transforming Shapes"></h3>
                 <p data-lang-jp="以下の操作方法で、図形の中に切り抜きたい範囲が収まるようにします。
                 <br>・頂点を左クリックしながらドラッグすると、図形を変形できます。
@@ -1894,6 +1899,7 @@
 				data-lang-alt-jp="ヘルプ用画像"
 				data-lang-alt-en="Help Image"
 				>
+                <br>
                 <h3 data-lang-jp="c.切り抜き実行" data-lang-en="c. Applying Masking"></h3>
                 <p data-lang-jp="[切り抜き実行]ボタンを押して、図形の範囲を切り抜きます。" 
                 data-lang-en="Click the [Apply Masking] button to mask the area defined by the shape(s)."></p>
@@ -3444,7 +3450,8 @@
                             if (src.includes('/Body Layer/') || 
                                 src.includes('/Face Accessories/') || 
                                 src.includes('/Head/') ||
-                                src.includes('recovery_layer2_Multicolor_Scarf_Black_3818.png')) {
+                                src.includes('recovery_layer2_Multicolor_Scarf_Black_3818.png') ||
+                                (tokenId === '2331' && (src.includes('Twintails_2331.png') || src.includes('Mekakure_2331.png')))) {
                                 headRecoveryAssets.push(src);
                             }
                         }

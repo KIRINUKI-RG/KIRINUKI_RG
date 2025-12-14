@@ -522,6 +522,17 @@ app.get('/api/get-recovery-masks-by-layers', (req, res) => {
                 masksByLayer[layerTag].push(url);
             }
         });
+
+        // ▼▼▼ ID 2331 例外処理: 特殊な補完パーツ ▼▼▼
+        if (tokenId === '2331') {
+            if (!masksByLayer['recovery_layer1']) masksByLayer['recovery_layer1'] = [];
+            masksByLayer['recovery_layer1'].push('/recovery_assets/Under Hair/recovery_layer1_Twintails_2331.png');
+
+            if (!masksByLayer['recovery_layer2']) masksByLayer['recovery_layer2'] = [];
+            masksByLayer['recovery_layer2'].push('/recovery_assets/Hair And Hat/recovery_layer2_Mekakure_2331.png');
+
+            console.log("★ ID 2331 例外: 特殊補完マスク (Under Hair / Hair And Hat) を追加しました。");
+        }
         
         console.log("★ Recovery: 補完マスクの検索結果:", masksByLayer); // デバッグログ追加
         res.json({ maskUrlsByLayer: masksByLayer });
