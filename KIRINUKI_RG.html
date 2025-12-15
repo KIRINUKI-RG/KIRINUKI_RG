@@ -1306,6 +1306,19 @@
             cursor: grabbing;
         }
 
+    /* ▼▼▼ スマホ対応用CSS追加 ▼▼▼ */
+        #previewCanvas {
+            touch-action: none; /* ブラウザのスクロールやズームを無効化 */
+            -webkit-touch-callout: none; /* iOSで長押しメニューを出さない */
+            user-select: none; /* テキスト選択を防ぐ */
+            -webkit-user-select: none;
+        }
+
+        /* コンテキストメニューをスマホで押しやすく */
+        #shapeContextMenu button {
+            padding: 12px 16px; /* タップ領域を拡大 */
+            font-size: 16px;
+        }
 
     </style>
 </head>
@@ -1381,6 +1394,12 @@
                     data-lang-en="Lightweight Mode"
                     title="4K解像度で処理を行い、メモリ使用量を抑えます">
                     軽量モードで取得 (4K)
+                </button>
+                <button id="fetchDataMobileBtn" 
+                    data-lang-jp="スマホモードで取得" 
+                    data-lang-en="Mobile Mode"
+                    title="スマホ向けに解像度を抑えて処理します">
+                    スマホモード
                 </button>
                 </div>
             <div id="statusMessage1"></div>
@@ -1967,6 +1986,21 @@
         </div>
     </div>
 
+    <div id="resultModalOverlay" class="modal-overlay hidden"></div>
+    <div id="resultModal" class="modal-window">
+        <div id="closeResultHandle" class="modal-handle-bar"></div>
+        <div id="resultContent" style="flex-grow: 1; overflow-y: auto; padding: 20px; text-align: center;">
+            <h2 data-lang-jp="画像の保存" data-lang-en="Save Image">画像の保存</h2>
+            <p data-lang-jp="以下の画像を長押しして、「写真に保存」を選択してください。" 
+               data-lang-en="Long-press the image below and select 'Save to Photos'.">
+               以下の画像を長押しして、「写真に保存」を選択してください。
+            </p>
+            <div id="resultImageContainer" style="margin-top: 20px; margin-bottom: 50px;">
+                </div>
+            </div>
+    </div>
+    </div>
+
     <script>
 
         const messages = {
@@ -2045,6 +2079,16 @@
         const stepCanvasContainer = document.getElementById('stepCanvasContainer'); 
         const fetchDataBtn = document.getElementById('fetchDataBtn');
         const fetchDataLightBtn = document.getElementById('fetchDataLightBtn');
+        const fetchDataMobileBtn = document.getElementById('fetchDataMobileBtn'); 
+        let isMobileMode = false; // スマホモードフラグ
+        
+        // モーダル関連要素
+        const resultModalOverlay = document.getElementById('resultModalOverlay');
+        const resultModal = document.getElementById('resultModal');
+        const resultImageContainer = document.getElementById('resultImageContainer');
+        const closeResultHandle = document.getElementById('closeResultHandle');
+        const resultCloseBtn = document.getElementById('resultCloseBtn');
+        const closeResultModalBtn = document.getElementById('closeResultModalBtn');
         const saveImageBtn = document.getElementById('saveImageBtn');
         const saveSizeSelect = document.getElementById('saveSizeSelect');
         const tokenIdInput = document.getElementById('tokenIdInput');
@@ -2155,15 +2199,43 @@
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
+        // ▼▼▼ 全ての画像読み込みを一元管理し、スマホ時はAPI経由にする ▼▼▼
         const loadImage = (url) => new Promise((res, rej) => {
+            let loadUrl = url;
+
+            // ■ スマホモードかつ、ローカルアセットへのアクセスの場合はAPIを経由させる
+            if (isMobileMode && (url.startsWith('/assets/') || url.startsWith('/recovery_assets/'))) {
+                // サーバー側の '/api/get-resized-asset' に、本来欲しかったパスを渡す
+                // サーバーが勝手に mobile_assets フォルダを見に行ってくれる
+                loadUrl = `/api/get-resized-asset?path=${encodeURIComponent(url)}`;
+            }
+
             const img = new Image();
             img.crossOrigin = 'anonymous';
-            img.onload = () => res(img);
-            img.onerror = () => {
-                console.error(`画像 ${url} のロードに失敗`);
+            
+            img.onload = () => {
+                // ロジック内で src プロパティを使って判定している箇所（例外処理など）のために、
+                // APIのURLではなく、元のパス(url)をプロパティとして持たせておく
+                if (isMobileMode) {
+                    img.originalSrc = url; 
+                    // 念のため src 属性自体は変えず、dataset等を使う手もあるが、
+                    // 既存ロジックが img.src を読んでいる場合、
+                    // サーバーが返す画像自体はバイナリなので、img.src はAPIのURLのままになる。
+                    // 既存コードの decodeURIComponent(img.src).includes(...) 対策として、
+                    // 読み込み完了後にJSオブジェクト上で src を偽装するのはリスクがあるため、
+                    // 判定ロジック側で `img.originalSrc || img.src` を見るようにするのがベストだが、
+                    // 簡易修正として「判定用」にこれを持たせる。
+                }
+                res(img);
+            };
+
+            img.onerror = (e) => {
+                console.error(`画像のロードに失敗: ${loadUrl}`, e);
+                // 失敗時も処理を止めないために空オブジェクトを返す
                 res({ width: 0, height: 0, src: url });
             };
-            img.src = url;
+            
+            img.src = loadUrl;
         });
         
         function cloneCanvas(oldCanvas) {
@@ -2176,11 +2248,32 @@
         }
         
         // ボタンクリックイベント設定
-        fetchDataBtn.addEventListener('click', () => executeFetchProcess(false));      // 通常モード (isLightMode = false)
-        fetchDataLightBtn.addEventListener('click', () => executeFetchProcess(true));  // 軽量モード (isLightMode = true)
-
+        fetchDataBtn.addEventListener('click', () => executeFetchProcess(false, false));      // 通常
+        fetchDataLightBtn.addEventListener('click', () => executeFetchProcess(true, false));  // 軽量
+        fetchDataMobileBtn.addEventListener('click', () => executeFetchProcess(false, true)); // スマホモード
+        
+        // ▼▼▼ 保存サイズプルダウンを復元する関数 ▼▼▼
+        function restoreSaveSizeOptions() {
+            saveSizeSelect.disabled = false;
+            // 既存のHTMLと同じ構造でリセット
+            saveSizeSelect.innerHTML = `
+                <option value="16384" data-lang-jp="最高 (16384px)" data-lang-en="Max (16384px)">オリジナル (16384px)</option>
+                <option value="3840" data-lang-jp="4K (3840px)" data-lang-en="4K (3840px)">4K (3840px)</option>
+                <option value="2560" data-lang-jp="QHD (2560px)" data-lang-en="QHD (2560px)">QHD (2560px)</option>
+                <option value="1920" data-lang-jp="FHD (1920px)" data-lang-en="FHD (1920px)">FHD (1920px)</option>
+                <option value="1080" data-lang-jp="HD (1080px, NFT Original)" data-lang-en="HD (1080px, NFT Original)">HD (1080px, NFT Original)</option>
+            `;
+            // 言語設定を再適用 (簡易的に現在の言語でテキスト更新)
+            const currentLang = localStorage.getItem('language') || 'jp';
+            // setLanguage(currentLang); // ※もしsetLanguageがスコープ外ならこの行は不要、表示時に更新されます
+        }
+        
         // 共通処理関数
-        async function executeFetchProcess(isLightMode) {
+        // ▼▼▼ 第2引数 isMobile を受け取れるようにする ▼▼▼
+        async function executeFetchProcess(isLightMode, isMobile = false) {
+            // ▼▼▼ 受け取った値をグローバル変数にセットする ▼▼▼
+            isMobileMode = isMobile;
+
             const tokenId = tokenIdInput.value;
             const tokenIdNum = Number(tokenId);
             const isValid = Number.isInteger(tokenIdNum) && tokenIdNum >= 1 && tokenIdNum <= 5000;
@@ -2298,14 +2391,14 @@
                 const imageData = await imageResponse.json();
                 const proxiedImageUrl = `/api/proxy-image?url=${encodeURIComponent(imageData.imageUrl)}`;
                 
-                const loadFaceMasksPromise = Promise.all(faceMaskUrls.map(url => new Promise((res, rej) => {
-                    const img = new Image();
-                    img.crossOrigin = 'anonymous';
-                    img.onload = () => res(img);
-                    img.onerror = rej;
-                    img.src = url;
-                })));
-
+                const loadFaceMasksPromise = (async () => {
+                    const imgs = [];
+                    // スマホなら直列、PCなら並列が良いですが、枚数が少ないので直列で安全策をとります
+                    for (const url of faceMaskUrls) {
+                    imgs.push(await loadImage(url));
+                    }
+                    return imgs;
+                })();
                 // エフェクト例外などのロード
                 const blueLightningAliases = ["Blue Lightning", "Blue Lightning Blue Skin", "Blue Lightning Red Skin"];
                 const isBlueLightningException = nftTraits.some(trait => trait.trait_type === 'Hand' && blueLightningAliases.includes(trait.value));
@@ -2313,15 +2406,7 @@
                 const isFlameException = nftTraits.some(trait => trait.trait_type === 'Hand' && flameAliases.includes(trait.value));
                 
                 let loadExceptionPromises = []; 
-                const loadExceptionImage = (url, name) => {
-                    return new Promise((res) => { 
-                        const img = new Image();
-                        img.crossOrigin = 'anonymous';
-                        img.onload = () => res(img);
-                        img.onerror = () => res(null); 
-                        img.src = url;
-                    });
-                };
+                const loadExceptionImage = (url) => loadImage(url);
 
                 if (isBlueLightningException) {
                     loadExceptionPromises.push(loadExceptionImage('/assets/Exception/head_layer3_Blue_Lightning.png', 'Blue Lightning').then(img => { blueLightningExceptionImg = img; }));
@@ -2342,26 +2427,36 @@
                 ]);
 
 
-                // --- 2. キャンバスサイズ設定 (通常 vs 軽量モード) ---
-                // ▼▼▼ 保存サイズ選択肢の制御 (軽量モードなら16Kを隠す) ▼▼▼
-                const option16k = saveSizeSelect.querySelector('option[value="16384"]');
-                if (isLightMode) {
-                    // 軽量モード: 16384pxを選択できないようにする
+                /// --- 2. キャンバスサイズ設定 (通常 vs 軽量モード & スマホモード) ---
+                // ▼▼▼ 保存サイズ選択肢の制御 ▼▼▼
+                restoreSaveSizeOptions(); // まず選択肢をリセット
+
+                if (isMobileMode) {
+                    // ★ スマホモード: 強制的に選択肢を絞る & デフォルト選択
+                    saveSizeSelect.innerHTML = ''; // 一旦クリア
+                    const option = document.createElement('option');
+                    option.value = '1080'; 
+                    option.text = `Mobile (1080px)`;
+                    option.selected = true;
+                    saveSizeSelect.appendChild(option);
+                    saveSizeSelect.disabled = true; 
+                    
+                } else if (isLightMode) {
+                    // 軽量モード: 16Kを隠す
+                    const option16k = saveSizeSelect.querySelector('option[value="16384"]');
                     if (option16k) {
                         option16k.style.display = 'none';
-                        option16k.disabled = true;   
+                        option16k.disabled = true;
                     }
-                    // もし16Kが選択されていたら、自動的に4Kに変更する
-                    if (saveSizeSelect.value === '16384') {
-                        saveSizeSelect.value = '3840';
-                    }
+                    if (saveSizeSelect.value === '16384') saveSizeSelect.value = '3840'; // 4Kへ
+                    
                 } else {
-                    // 通常モード: 16384pxを選択可能にする
+                    // 通常モード: 全開放
+                    const option16k = saveSizeSelect.querySelector('option[value="16384"]');
                     if (option16k) {
-                        option16k.style.display = '';     // 表示
-                        option16k.disabled = false;       // 有効化
+                        option16k.style.display = '';
+                        option16k.disabled = false;
                     }
-                    // 通常モードはデフォルトで16Kを選択しておく
                     saveSizeSelect.value = '16384';
                 }
 
@@ -2369,18 +2464,22 @@
                 let width = largestMask ? largestMask.width : nftImage.width;
                 let height = largestMask ? largestMask.height : nftImage.height;
 
-                if (isLightMode) {
+                // ▼▼▼ リサイズ計算処理 ▼▼▼
+                if (isMobileMode) {
+                    const MOBILE_SIZE = 1080; // スマホ用の安全サイズ
+                    if (width > MOBILE_SIZE) {
+                        const aspect = height / width;
+                        width = MOBILE_SIZE;
+                        height = Math.round(MOBILE_SIZE * aspect);
+                        console.log(`★ スマホモード: サイズを縮小しました -> ${width}x${height}`);
+                    }
+                } else if (isLightMode) {
                     const TARGET_SIZE = 3840;
-
-                    // 元画像の幅が4Kより大きい場合のみ縮小
                     if (width > TARGET_SIZE) {
                         const aspect = height / width;
                         width = TARGET_SIZE;
                         height = Math.round(TARGET_SIZE * aspect);
-                        
-                        console.log(`★ 軽量モード: キャンバスサイズを縮小しました (${largestMask ? largestMask.width : nftImage.width} -> ${width}x${height})`);
-                        
-                        // 補足: FaceShieldBlackなどの座標計算は 'canvasWidth' (このwidth) に基づく相対計算になっているため、ここで width を変更すれば自動的に整合します。
+                        console.log(`★ 軽量モード: サイズを縮小しました -> ${width}x${height}`);
                     }
                 } else {
                     console.log(`★ 通常モード: オリジナル解像度を使用します (${width}x${height})`);
@@ -2390,7 +2489,7 @@
                 offscreenCanvas.width = width;
                 offscreenCanvas.height = height;
 
-                // プレビュー用キャンバスのサイズ計算 (メモリ対策 + 余白追加)
+                // プレビュー用キャンバスのサイズ計算
                 const MAX_PREVIEW_WIDTH = 2560; 
                 let previewBaseWidth = width;
                 let previewBaseHeight = height;
@@ -2404,6 +2503,7 @@
                 const paddingW = previewBaseWidth * CANVAS_PADDING_RATIO;
                 const paddingH = previewBaseHeight * CANVAS_PADDING_RATIO;
                 
+                // ★ DPR考慮をやめて、単純に計算したサイズを設定する
                 previewCanvas.width = previewBaseWidth + (paddingW * 2);
                 previewCanvas.height = previewBaseHeight + (paddingH * 2);
                 
@@ -2520,47 +2620,73 @@
             }
         }
 
+        // ▼▼▼ 修正版: スマホは直列読み込み、PCは並列読み込み ▼▼▼
         async function loadAllImages(maskUrlsByLayer, nftImageUrl, recoveryUrlsByLayer = {}) {
             
             const loadLayerImages = async (urlsByLayer, targetObject) => {
-                const allPromises = [];
+                // タスク一覧を作成
+                const tasks = [];
                 for (const layer in urlsByLayer) {
                     urlsByLayer[layer].forEach(url => {
-                        allPromises.push(
-                            loadImage(url).then(img => ({ img, layer }))
-                        );
+                        tasks.push({ layer, url });
                     });
                 }
-                const loadedImages = await Promise.all(allPromises);
-                loadedImages.forEach(({ img, layer }) => {
-                    if (img.width > 0) {
-                        if (!targetObject[layer]) targetObject[layer] = [];
-                        targetObject[layer].push(img);
+
+                if (isMobileMode) {
+                    // ★スマホ: サーバー負荷とメモリパンクを防ぐため、1枚ずつ順番に読み込む
+                    console.log(`★ スマホモード: ${tasks.length}枚の画像を軽量API経由で読み込みます...`);
+                    for (const task of tasks) {
+                        try {
+                            // 【重要】以前のバグ修正: task.layerImages ではなく task.url
+                            const imageObj = await loadImage(task.url);
+
+                            if (imageObj.width > 0) {
+                                if (!targetObject[task.layer]) targetObject[task.layer] = [];
+                                targetObject[task.layer].push(imageObj);
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
                     }
-                });
+                } else {
+                    // ★PC: 高速化のため、今まで通り並列で読み込む
+                    const allPromises = tasks.map(task => 
+                        loadImage(task.url).then(img => ({ img, layer: task.layer }))
+                    );
+                    const loadedImages = await Promise.all(allPromises);
+                    loadedImages.forEach(({ img, layer }) => {
+                        if (img.width > 0) {
+                            if (!targetObject[layer]) targetObject[layer] = [];
+                            targetObject[layer].push(img);
+                        }
+                    });
+                }
             };
 
-            const loadNftImagePromise = new Promise((resolve, reject) => {
-                nftImage = new Image();
-                nftImage.crossOrigin = 'anonymous';
-                nftImage.onload = () => resolve();
-                nftImage.onerror = () => reject(new Error(`NFT画像 ${nftImageUrl} のロードに失敗`));
-                nftImage.src = nftImageUrl;
+            // NFT画像の読み込み
+            // NFT画像自体は外部URLなので、loadImage内の「ローカルアセット判定」には引っかからず、
+            // そのまま外部URLとして読み込まれます（これでOK）
+            const loadNftImagePromise = loadImage(nftImageUrl).then(img => {
+                if (img.width === 0) throw new Error(`NFT画像 ${nftImageUrl} のロードに失敗`);
+                nftImage = img;
             });
             
             maskImgs = {};
             recoveryImgs = {};
+
+            // レイヤー画像の読み込み実行
             await Promise.all([
                 loadLayerImages(maskUrlsByLayer, maskImgs),
                 loadLayerImages(recoveryUrlsByLayer, recoveryImgs),
                 loadNftImagePromise
             ]);
-
+            
+            // ログ出力（デバッグ用）
             const recoverySrcs = {};
             for (const layer in recoveryImgs) {
-                recoverySrcs[layer] = recoveryImgs[layer].map(img => img.src);
+                recoverySrcs[layer] = recoveryImgs[layer].map(img => img.originalSrc || img.src);
             }
-            console.log("★ Recovery: 補完画像(recoveryImgs)の読み込み結果 (srcリスト):", recoverySrcs);
+            console.log("★ Recovery読み込み完了:", recoverySrcs);
         }
 
         function getLargestMask(maskObject) {
@@ -2587,30 +2713,22 @@
 
             const shouldFixStrayHair = mode === 'head' && isStrayHairFixOn && Object.keys(underHairFixMasks).length > 0;
             
-            if (isRecovery === null) { 
-                 console.log(`★ UnderHair Fix (getActiveMasks / maskImgs): 適用条件チェック (isRecovery: ${isRecovery}): 
-    - mode === 'head': ${mode === 'head'}
-    - isStrayHairFixOn: ${isStrayHairFixOn}
-    - masks loaded > 0: ${Object.keys(underHairFixMasks).length > 0}
-    - >> 最終結果: ${shouldFixStrayHair}`);
-            }
+            // (ログ出力部分は省略可)
 
             if (shouldFixStrayHair) {
-                if (isRecovery === null) {
-                    console.log(`★ UnderHair Fix (getActiveMasks / maskImgs): 適用処理を実行します...`);
-                }
-                
                 const canvasWidth = offscreenCanvas.width;
                 const canvasHeight = offscreenCanvas.height;
 
                 for (const layer in activeMasks) {
                     if (Array.isArray(activeMasks[layer])) {
                         activeMasks[layer] = activeMasks[layer].map(originalImg => {
-                            if (!originalImg || !originalImg.src) {
-                                return originalImg;
-                            }
+                            if (!originalImg || !originalImg.src) return originalImg;
 
-                            const fileName = originalImg.src.split('/').pop();
+                            // ▼▼▼ スマホモード対応 (originalSrc を優先) ▼▼▼
+                            const rawSrc = originalImg.originalSrc || originalImg.src;
+                            const fileName = rawSrc.split('/').pop();
+                            
+                            // 正規表現判定
                             const match = fileName.match(/^(?:.*_layer\d+_)?(.*)\.png$/i);
                             let fixMask = null;
                             let baseName = null;
@@ -2629,19 +2747,16 @@
                                 tempCanvas.width = canvasWidth;
                                 tempCanvas.height = canvasHeight;
                                 const tempCtx = tempCanvas.getContext('2d');
-
                                 tempCtx.drawImage(originalImg, 0, 0, canvasWidth, canvasHeight);
                                 tempCtx.globalCompositeOperation = 'destination-out';
                                 tempCtx.drawImage(fixMask, 0, 0, canvasWidth, canvasHeight);
                                 tempCtx.globalCompositeOperation = 'source-over';
-                                
                                 return tempCanvas; 
                             } else {
-                                const decodedSrc = decodeURIComponent(originalImg.src);
+                                // ▼▼▼ decodeURIComponent も rawSrc に対して行う ▼▼▼
+                                const decodedSrc = decodeURIComponent(rawSrc);
                                 if (decodedSrc && decodedSrc.includes('/assets/Under Hair/')) {
-                                    if (isRecovery === null) { 
-                                        console.log(`★ UnderHair Fix (getActiveMasks): [スキップ] ${originalImg.src} (base: ${baseName}) はUnderHair画像ですが、対応する補正マスクが見つかりませんでした。`);
-                                    }
+                                    // ログ省略
                                 }
                                 return originalImg;
                             }
@@ -2650,17 +2765,15 @@
                 }
             }
 
+            // Blue Lightning / Flame 例外の判定 (src.includes を使用している箇所)
             if (mode === 'head' && blueLightningExceptionImg) {
-                console.log(`★ Blue Lightning 例外: '${mode}' モードで適用します。`);
-
                 let originalMaskRemoved = false;
                 if (activeMasks.body_layer3) {
                     activeMasks.body_layer3 = activeMasks.body_layer3.filter(img => {
-                        const isLightning = img.src && img.src.includes('Blue_Lightning'); 
-                        if (isLightning) {
-                            console.log(`★ Blue Lightning 例外: body_layer3 から original マスク (${img.src}) を削除。`);
-                            originalMaskRemoved = true;
-                        }
+                        // ▼▼▼ src 判定 ▼▼▼
+                        const checkSrc = img.originalSrc || img.src; 
+                        const isLightning = checkSrc && checkSrc.includes('Blue_Lightning'); 
+                        if (isLightning) originalMaskRemoved = true;
                         return !isLightning;
                     });
                 }
@@ -2681,15 +2794,14 @@
             }
             
             if (mode === 'head' && flameExceptionImg) {
-                console.log(`★ Flame 例外: '${mode}' モードで適用します。`);
-                
                 let originalMaskRemoved = false;
                 if (activeMasks.body_layer3) {
                     activeMasks.body_layer3 = activeMasks.body_layer3.filter(img => {
-                        const isFlame = img.src && img.src.includes('Flame'); 
+                        // ▼▼▼ src 判定 ▼▼▼
+                        const checkSrc = img.originalSrc || img.src;
+                        const isFlame = checkSrc && checkSrc.includes('Flame'); 
                         if (isFlame) {
-                            if (!img.src.includes('Blue_Lightning')) {
-                                console.log(`★ Flame 例外: body_layer3 から original マスク (${img.src}) を削除。`);
+                            if (!checkSrc.includes('Blue_Lightning')) {
                                 originalMaskRemoved = true;
                                 return false; 
                             }
@@ -2881,11 +2993,17 @@
             const params = getCoordinateParams();
             if (!params) return;
             
-            // 線の太さ調整
             const rect = previewCanvas.getBoundingClientRect();
+            // DPR考慮を削除
             const scaleDisplay = previewCanvas.width / rect.width;
-            const drawLineWidth = 1 * scaleDisplay;
-            const drawVertexRadius = VERTEX_DRAW_SIZE * scaleDisplay;
+            
+            // ★ スマホモードの「4倍拡大（見やすくする）」機能だけは残す！
+            // これは「解像度」ではなく「見た目の大きさ」なので重くなりません
+            const mobileScale = isMobileMode ? 4 : 1;
+            
+            // 線幅・半径の計算 (DPRの掛け算を削除)
+            const drawLineWidth = 1 * scaleDisplay * mobileScale;
+            const drawVertexRadius = VERTEX_DRAW_SIZE * scaleDisplay * mobileScale;
 
             previewCtx.save();
 
@@ -2895,7 +3013,6 @@
 
                 previewCtx.beginPath();
                 
-                // 座標変換: (x * scale) + offset
                 const tx = (v) => v.x * params.scale + params.offsetX;
                 const ty = (v) => v.y * params.scale + params.offsetY;
 
@@ -2956,21 +3073,18 @@
             
             // 表示倍率
             const scale = offscreenCanvas.width / rect.width; 
-            
-            // ▼▼▼ 判定用スケールを「8倍」に設定 (見た目は4倍のまま、判定だけさらに倍！) ▼▼▼
-            const mobileScale = isMobileMode ? 8 : 1;
+            const mobileScale = isMobileMode ? 4 : 1;
 
-            // ▼▼▼ 吸い付き範囲(バッファ)もさらに広げる (2.5 -> 5.0) ▼▼▼
-            const vertexHitBuffer = VERTEX_HIT_BUFFER * (isMobileMode ? 5.0 : 1.5); 
+            // ★ 頂点の判定優先度（吸い付きやすさ）は残しておくと便利です
+            const vertexHitBuffer = VERTEX_HIT_BUFFER * (isMobileMode ? 2.5 : 1.5); 
             
-            // 判定半径の計算 (VERTEX_DRAW_SIZE は描画サイズ基準値ですが、ここでは判定計算のベースとして使用)
+            // 判定半径の計算 (DPR削除)
             const vertexHitRadiusSq = Math.pow(((VERTEX_DRAW_SIZE * mobileScale) + vertexHitBuffer) * scale, 2);
             const lineHitRadiusSq = Math.pow((LINE_HIT_WIDTH * mobileScale) * scale, 2); 
 
             let newHoveredVertex = null;
             let newHoveredEdge = null;
             
-            // 頂点の判定距離リミット
             let minVertexDistSq = vertexHitRadiusSq; 
             let minEdgeDistSq = lineHitRadiusSq; 
 
@@ -3234,7 +3348,7 @@
                         const tailKeywords = ['Cat_Tail', 'Dog_Tail', 'Dragontail'];
                         const tails = activeMasks.bp_layer1.filter(img => {
                             if (!img.src) return false;
-                            const src = decodeURIComponent(img.src);
+                            const src = decodeURIComponent(img.originalSrc || img.src);
                             return tailKeywords.some(keyword => src.includes(keyword));
                         });
                         if (tails.length > 0) {
@@ -3475,7 +3589,10 @@
                 if (Array.isArray(recoveryImgs[layer])) {
                     recoveryImgs[layer].forEach(img => {
                         if (img && img.src) {
-                            const src = decodeURIComponent(img.src);
+                            // ▼▼▼ スマホ対応パス取得 ▼▼▼
+                            const rawSrc = img.originalSrc || img.src;
+                            const src = decodeURIComponent(rawSrc);
+                            
                             if (src.includes('/Body Layer/') || 
                                 src.includes('/Face Accessories/') || 
                                 src.includes('/Head/') ||
@@ -3614,7 +3731,8 @@
                                         // ▼▼▼ ID 1871 の場合、ID Card を切り抜きマスクから除外 ▼▼▼
                                             const filteredLayer = bodyLayer.filter(img => {
                                                 if (document.getElementById('tokenIdInput').value === '1871' && img.src) {
-                                                    const isIDCard = decodeURIComponent(img.src).includes('ID_Card');
+                                                    const rawSrc = img.originalSrc || img.src;
+                                                    const isIDCard = decodeURIComponent(rawSrc).includes('ID_Card');
                                                     if (isIDCard) {
                                                         console.log("★ Clipping: ID 1871 例外 - ID Card を頭切り抜きマスクから除外しました。");
                                                     }
@@ -3644,7 +3762,7 @@
                                 const tailKeywords = ['Cat_Tail', 'Dog_Tail', 'Dragontail'];
                                 const tails = activeMasks.bp_layer1.filter(img => {
                                     if (!img.src) return false;
-                                    const src = decodeURIComponent(img.src);
+                                    const src = decodeURIComponent(img.originalSrc || img.src);
                                     return tailKeywords.some(keyword => src.includes(keyword));
                                 });
                                 if (tails.length > 0) {
@@ -3782,7 +3900,7 @@
                                 (img) => {
                                     // 画像のsrcにキーワードが含まれていたら「除外(true)」する
                                     if (!img.src) return false;
-                                    const src = decodeURIComponent(img.src);
+                                    const src = decodeURIComponent(img.originalSrc || img.src);
                                     return gasmaskKeywords.some(keyword => src.includes(keyword));
                                 }
                             );
@@ -3890,7 +4008,7 @@
                             const tailKeywords = ['Cat_Tail', 'Dog_Tail', 'Dragontail'];
                             const tails = activeMasks.bp_layer1.filter(img => {
                                 if (!img.src) return false;
-                                const src = decodeURIComponent(img.src);
+                                const src = decodeURIComponent(img.originalSrc || img.src);
                                 return tailKeywords.some(keyword => src.includes(keyword));
                             });
                             if (tails.length > 0) {
@@ -4091,25 +4209,62 @@
             finalCtx.drawImage(blurMaskCanvas, 0, 0);
             finalCtx.globalCompositeOperation = 'source-over';
             
+            // ▼▼▼ 修正: スマホモードならウィンドウ表示、PCならダウンロード ▼▼▼
             const dataURL = finalCanvas.toDataURL('image/png');
-            const link = document.createElement('a');
 
-            // 1. 切り抜き範囲の文字列決定
-            let areaName = 'Unknown';
-            if (currentMode === 'head') areaName = 'Head';
-            else if (currentMode === 'headBody') areaName = 'HeadBody';
-            else if (currentMode === 'headBodyBg') areaName = 'HeadBodyBg';
+            if (isMobileMode) {
+                // ★ スマホモード: モーダルで画像を表示
+                resultImageContainer.innerHTML = ''; // クリア
+                const img = document.createElement('img');
+                img.src = dataURL;
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                img.style.border = '1px solid #555';
+                
+                // 長押し保存を邪魔しないように、コンテキストメニュー禁止をここには付けない
+                
+                resultImageContainer.appendChild(img);
+                
+                // モーダルを開く
+                resultModalOverlay.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    resultModal.classList.add('is-open');
+                });
 
-            // 2. ファイル名の組み立て: KRG_ID_範囲_方法_解像度.png
-            const tokenId = tokenIdInput.value;
-            const resolution = saveSizeSelect.value;
-            
-            link.download = `KRG_${tokenId}_${areaName}_${currentMaskingType}_${resolution}px.png`;
-            link.href = dataURL;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            } else {
+                // ★ PCモード: 通常ダウンロード
+                const link = document.createElement('a');
+    
+                // 1. 切り抜き範囲の文字列決定
+                let areaName = 'Unknown';
+                if (currentMode === 'head') areaName = 'Head';
+                else if (currentMode === 'headBody') areaName = 'HeadBody';
+                else if (currentMode === 'headBodyBg') areaName = 'HeadBodyBg';
+    
+                // 2. ファイル名の組み立て
+                const tokenId = tokenIdInput.value;
+                const resolution = saveSizeSelect.value;
+                
+                link.download = `KRG_${tokenId}_${areaName}_${currentMaskingType}_${resolution}px.png`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         });
+
+        // ▼▼▼ 結果モーダルの閉じる処理 ▼▼▼
+        const closeResultModal = () => {
+            resultModal.classList.remove('is-open');
+            setTimeout(() => {
+                resultModalOverlay.classList.add('hidden');
+            }, 400);
+        };
+
+        if (closeResultHandle) closeResultHandle.addEventListener('click', closeResultModal);
+        if (resultCloseBtn) resultCloseBtn.addEventListener('click', closeResultModal);
+        if (closeResultModalBtn) closeResultModalBtn.addEventListener('click', closeResultModal);
+        if (resultModalOverlay) resultModalOverlay.addEventListener('click', closeResultModal);
 
         function setupSliderInput(slider, input, paramKey, paramsObject) {
             const updateValue = (value) => {
@@ -4450,6 +4605,292 @@
             shapeContextMenu.style.display = 'none';
             contextMenu.visible = false;
         });
+
+        // ==========================================================
+        // ▼▼▼ スマホ対応: タッチイベントハンドリング (修正版) ▼▼▼
+        // ==========================================================
+
+        let initialPinchDistance = null;
+        let initialZoomLevel = 100;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let touchStartX = 0; // タップ判定用 (開始位置)
+        let touchStartY = 0; // タップ判定用 (開始位置)
+        let hasMoved = false; // タップ判定用 (移動したか)
+        let longPressTimer = null;
+        let isMultiTouch = false;
+        const LONG_PRESS_DURATION = 500; // 長押し判定時間 (ms)
+
+        // 2点間の距離を求める
+        function getDistance(touch1, touch2) {
+            return Math.sqrt(Math.pow(touch2.clientX - touch1.clientX, 2) + Math.pow(touch2.clientY - touch1.clientY, 2));
+        }
+
+        // キャンバスのタッチ開始
+        previewCanvas.addEventListener('touchstart', (e) => {
+            if (stepManualCut.classList.contains('hidden')) return;
+            e.preventDefault(); // スクロール防止
+
+            // コンテキストメニューが開いていたら閉じる
+            if (contextMenu.visible) {
+                shapeContextMenu.style.display = 'none';
+                contextMenu.visible = false;
+            }
+
+            // --- 2本指: ピンチズーム/パン開始 ---
+            if (e.touches.length === 2) {
+                isMultiTouch = true;
+                clearTimeout(longPressTimer); // 長押しキャンセル
+                initialPinchDistance = getDistance(e.touches[0], e.touches[1]);
+                initialZoomLevel = zoomLevel;
+                
+                // パン用の中点計算
+                lastTouchX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                return;
+            }
+
+            // --- 1本指: ドラッグ or 長押し or タップ ---
+            if (e.touches.length === 1) {
+                isMultiTouch = false;
+                const touch = e.touches[0];
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+                
+                // タップ判定用の初期化
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                hasMoved = false;
+
+                // ★図形追加モードなら、ここでの移動判定などはスキップ
+                if (isAddingShapeMode) return;
+
+                // 1. ホバー判定 (指の下に頂点があるか確認)
+                const mockEvent = { 
+                    clientX: touch.clientX, 
+                    clientY: touch.clientY, 
+                    target: previewCanvas 
+                };
+                
+                updateHoverState(mockEvent);
+
+                // 2. 操作対象の決定
+                if (hoveredVertex) {
+                    draggingVertex = hoveredVertex;
+                    startLongPressTimer(e); // 長押しタイマー開始 (削除メニュー用)
+                } else if (hoveredEdge) {
+                    startLongPressTimer(e); // 長押しタイマー開始 (追加メニュー用)
+                    // 辺の上ならパン操作へ
+                    isPanning = true;
+                    startPanX = touch.clientX - panX;
+                    startPanY = touch.clientY - panY;
+                } else {
+                    // 何もないところ -> パン操作
+                    isPanning = true;
+                    startPanX = touch.clientX - panX;
+                    startPanY = touch.clientY - panY;
+                }
+            }
+        }, { passive: false });
+
+        // キャンバスのタッチ移動
+        previewCanvas.addEventListener('touchmove', (e) => {
+            if (stepManualCut.classList.contains('hidden')) return;
+            e.preventDefault();
+
+            clearTimeout(longPressTimer); // 動いたら長押しキャンセル
+
+            // --- 2本指: ピンチズーム & パン ---
+            if (e.touches.length === 2 && isMultiTouch) {
+                // A. ズーム処理
+                const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                if (initialPinchDistance > 0) {
+                    const ratio = currentDistance / initialPinchDistance;
+                    const newZoom = initialZoomLevel * ratio;
+                    setZoom(newZoom, null, null);
+                }
+
+                // B. パン処理 (2本指の中点の移動量)
+                const currentCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const currentCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                
+                const deltaX = currentCenterX - lastTouchX;
+                const deltaY = currentCenterY - lastTouchY;
+                
+                panX += deltaX;
+                panY += deltaY;
+                applyZoomPan();
+
+                lastTouchX = currentCenterX;
+                lastTouchY = currentCenterY;
+                return;
+            }
+
+            // --- 1本指: 頂点ドラッグ or パン ---
+            if (e.touches.length === 1 && !isMultiTouch) {
+                const touch = e.touches[0];
+                
+                // タップかドラッグかの判定 (少しでも動いたらタップとみなさない)
+                if (Math.abs(touch.clientX - touchStartX) > 5 || 
+                    Math.abs(touch.clientY - touchStartY) > 5) {
+                    hasMoved = true;
+                }
+
+                if (isAddingShapeMode) return; // 追加モード中はドラッグ操作なし
+
+                const mockEvent = { 
+                    clientX: touch.clientX, 
+                    clientY: touch.clientY, 
+                    touches: [touch], 
+                    target: previewCanvas 
+                };
+
+                if (draggingVertex) {
+                    // 頂点移動
+                    const internalCoords = getInternalCoords(mockEvent);
+                    const { shapeId, vertexIndex } = draggingVertex;
+                    const shape = shapes.find(s => s.id === shapeId);
+                    if (shape) {
+                        const imgWidth = offscreenCanvas.width;
+                        const imgHeight = offscreenCanvas.height;
+                        const marginX = imgWidth * CANVAS_PADDING_RATIO;
+                        const marginY = imgHeight * CANVAS_PADDING_RATIO;
+
+                        let restrictedX = Math.max(-marginX, Math.min(imgWidth + marginX, internalCoords.x));
+                        let restrictedY = Math.max(-marginY, Math.min(imgHeight + marginY, internalCoords.y));
+                        
+                        shape.vertices[vertexIndex].x = restrictedX;
+                        shape.vertices[vertexIndex].y = restrictedY;
+                        updatePreview();
+                    }
+
+                } else if (isPanning) {
+                    // パン移動 (移動制限付き)
+                    let newPanX = touch.clientX - startPanX;
+                    let newPanY = touch.clientY - startPanY;
+
+                    // ▼▼▼ 移動範囲の制限 (Clamp) を追加 ▼▼▼
+                    if (zoomLevel <= 80) {
+                        newPanX = 0;
+                        newPanY = 0;
+                    } else {
+                        const rect = stepCanvasContainer.getBoundingClientRect();
+                        const maxPanX = (rect.width * (zoomLevel / 100) - rect.width * 0.80) / 2;
+                        const maxPanY = (rect.height * (zoomLevel / 100) - rect.height * 0.80) / 2;
+
+                        newPanX = Math.max(-maxPanX, Math.min(maxPanX, newPanX));
+                        newPanY = Math.max(-maxPanY, Math.min(maxPanY, newPanY));
+                    }
+                    // ▲▲▲ 修正ここまで ▲▲▲
+
+                    panX = newPanX;
+                    panY = newPanY;
+                    applyZoomPan();
+                }
+            }
+        }, { passive: false });
+
+        // キャンバスのタッチ終了
+        previewCanvas.addEventListener('touchend', (e) => {
+            clearTimeout(longPressTimer);
+            
+            // ▼▼▼ 図形追加モードで「タップ」された場合の処理を追加 ▼▼▼
+            if (isAddingShapeMode && !hasMoved && !isMultiTouch && !draggingVertex && !isPanning) {
+                // タップされた位置を取得 (touchendではtouchesが空なのでchangedTouchesを使う)
+                const touch = e.changedTouches[0];
+                const mockEvent = { 
+                    clientX: touch.clientX, 
+                    clientY: touch.clientY, 
+                    touches: [touch], 
+                    target: previewCanvas 
+                };
+                
+                // 図形追加ロジック (clickイベントの内容を移植)
+                const internalCoords = getInternalCoords(mockEvent);
+                const size = offscreenCanvas.width * 0.1; 
+                const height = size * (Math.sqrt(3) / 2);
+                
+                const vertices = [
+                    { x: internalCoords.x, y: internalCoords.y - (2/3) * height }, 
+                    { x: internalCoords.x - size / 2, y: internalCoords.y + (1/3) * height }, 
+                    { x: internalCoords.x + size / 2, y: internalCoords.y + (1/3) * height }
+                ];
+
+                const newShape = {
+                    id: Date.now(),
+                    vertices: vertices
+                };
+                
+                shapes.push(newShape);
+                
+                isAddingShapeMode = false; 
+                statusMessage3.dataset.langKey = 'manualMaskPlaced';
+                statusMessage3.dataset.langVars = '{}';
+                updateCutModeUI();
+                updatePreview(); 
+                recordHistory(false);
+                return; // 処理終了
+            }
+            
+            if (draggingVertex) {
+                recordHistory(false); // 履歴保存
+            }
+
+            draggingVertex = null;
+            isPanning = false;
+            isMultiTouch = false;
+            initialPinchDistance = null;
+            
+            updateCursorStyle();
+        });
+
+        // 長押しタイマー開始関数
+        function startLongPressTimer(e) {
+            const touch = e.touches[0];
+            const clientX = touch.clientX;
+            const clientY = touch.clientY;
+
+            longPressTimer = setTimeout(() => {
+                // 長押し成功！ -> コンテキストメニュー表示
+                draggingVertex = null; // ドラッグキャンセル
+                isPanning = false;    // パンキャンセル
+                
+                const containerRect = stepCanvasContainer.getBoundingClientRect();
+                const menuX = clientX - containerRect.left;
+                const menuY = clientY - containerRect.top;
+                
+                let target = null;
+                if (hoveredVertex) {
+                    target = hoveredVertex;
+                    ctxAddVertex.style.display = 'none';
+                    ctxDeleteVertex.style.display = 'block';
+                    ctxDeleteShape.style.display = 'block';
+                } else if (hoveredEdge) {
+                    target = hoveredEdge;
+                    ctxAddVertex.style.display = 'block';
+                    ctxDeleteVertex.style.display = 'none';
+                    ctxDeleteShape.style.display = 'block'; 
+                } else {
+                    return;
+                }
+                
+                contextMenu = {
+                    visible: true,
+                    target: target,
+                    x: clientX,
+                    y: clientY
+                };
+
+                const menuWidth = 120;
+                const menuHeight = 110; 
+                shapeContextMenu.style.left = Math.min(menuX, containerRect.width - menuWidth) + 'px';
+                shapeContextMenu.style.top = Math.min(menuY, containerRect.height - menuHeight) + 'px';
+                shapeContextMenu.style.display = 'block';
+
+                if (navigator.vibrate) navigator.vibrate(50); // 振動フィードバック
+
+            }, LONG_PRESS_DURATION);
+        }
         
         // [マニュアル透過処理] ボタン
         applyManualCutBtn.addEventListener('click', () => {
@@ -4729,7 +5170,8 @@
                 helpModal.scrollTop = 0;
             };
 
-            // モーダルを閉じる関数
+            // モーダルを閉
+じる関数
  
            const closeModal = () => {
                 helpModal.classList.remove('is-open');
