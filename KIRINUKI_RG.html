@@ -2953,29 +2953,46 @@
             const internalCoords = getInternalCoords(event);
             const rect = previewCanvas.getBoundingClientRect();
             if (rect.width === 0 || offscreenCanvas.width === 0) return;
+            
+            // 表示倍率
             const scale = offscreenCanvas.width / rect.width; 
-            const vertexHitRadiusSq = Math.pow((VERTEX_DRAW_SIZE + VERTEX_HIT_BUFFER) * scale, 2);
-            const lineHitRadiusSq = Math.pow(LINE_HIT_WIDTH * scale, 2); 
+            
+            // ▼▼▼ 判定用スケールを「8倍」に設定 (見た目は4倍のまま、判定だけさらに倍！) ▼▼▼
+            const mobileScale = isMobileMode ? 8 : 1;
+
+            // ▼▼▼ 吸い付き範囲(バッファ)もさらに広げる (2.5 -> 5.0) ▼▼▼
+            const vertexHitBuffer = VERTEX_HIT_BUFFER * (isMobileMode ? 5.0 : 1.5); 
+            
+            // 判定半径の計算 (VERTEX_DRAW_SIZE は描画サイズ基準値ですが、ここでは判定計算のベースとして使用)
+            const vertexHitRadiusSq = Math.pow(((VERTEX_DRAW_SIZE * mobileScale) + vertexHitBuffer) * scale, 2);
+            const lineHitRadiusSq = Math.pow((LINE_HIT_WIDTH * mobileScale) * scale, 2); 
+
             let newHoveredVertex = null;
             let newHoveredEdge = null;
+            
+            // 頂点の判定距離リミット
             let minVertexDistSq = vertexHitRadiusSq; 
             let minEdgeDistSq = lineHitRadiusSq; 
 
             for (const shape of shapes) {
                 const { id, vertices } = shape;
                 
-                // 頂点のホバーチェック (内部座標系)
+                // 1. まず頂点をチェック (優先)
                 for (let i = 0; i < vertices.length; i++) {
                     const v = vertices[i];
                     const distSq = Math.pow(internalCoords.x - v.x, 2) + Math.pow(internalCoords.y - v.y, 2);
+                    
                     if (distSq < minVertexDistSq) {
                         minVertexDistSq = distSq;
                         newHoveredVertex = { shapeId: id, vertexIndex: i };
                     }
                 }
+            }
 
-                // 辺のホバーチェック (内部座標系)
-                if (!newHoveredVertex) { 
+            // 2. 頂点が見つからなかった場合のみ、辺をチェック
+            if (!newHoveredVertex) {
+                for (const shape of shapes) {
+                    const { id, vertices } = shape;
                     for (let i = 0; i < vertices.length; i++) {
                         const v1 = vertices[i];
                         const v2 = vertices[(i + 1) % vertices.length];
@@ -2990,7 +3007,6 @@
                 }
             }
 
-            // カーソルと状態の更新
             if (newHoveredVertex) {
                 hoveredVertex = newHoveredVertex;
                 hoveredEdge = null;

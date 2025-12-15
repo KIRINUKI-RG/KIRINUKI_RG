@@ -534,7 +534,7 @@ app.get('/api/get-recovery-masks-by-layers', (req, res) => {
             console.log("★ ID 2331 例外: 特殊補完マスク (Under Hair / Hair And Hat) を追加しました。");
         }
         
-        console.log("★ Recovery: 補完マスクの検索結果:", masksByLayer); // デバッグログ追加
+        console.log("★ Recovery: 補完マスクの検索結果:", masksByLayer); // デバッグログ
         res.json({ maskUrlsByLayer: masksByLayer });
 
     } catch (error) {
