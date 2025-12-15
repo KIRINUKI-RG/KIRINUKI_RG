@@ -114,6 +114,48 @@ app.get('/api/proxy-image', async (req, res) => {
     }
 });
 
+// ▼▼▼ スマホ用・軽量アセット配信API (事前生成版) ▼▼▼
+app.get('/api/get-resized-asset', async (req, res) => {
+    const { path: targetPath } = req.query;
+    if (!targetPath) return res.status(400).send('Path is required');
+
+    try {
+        const safePath = decodeURIComponent(targetPath).replace(/\.\./g, '');
+        
+        // 1. パスをモバイル用に書き換える
+        // 例: /assets/Face/xxx.png -> /mobile_assets/Face/xxx.png
+        let mobilePath = '';
+        if (safePath.startsWith('/assets/')) {
+            mobilePath = safePath.replace('/assets/', '/mobile_assets/');
+        } else if (safePath.startsWith('/recovery_assets/')) {
+            mobilePath = safePath.replace('/recovery_assets/', '/mobile_recovery_assets/');
+        } else {
+             return res.status(403).send('Invalid path');
+        }
+
+        const fullPath = path.join(__dirname, mobilePath);
+
+        // 2. モバイル版が存在すればそれを返す
+        if (fs.existsSync(fullPath)) {
+            res.sendFile(fullPath);
+        } else {
+            // モバイル版が無い（生成漏れ等）場合は、仕方ないので元のデカい画像を返す
+            // (サーバーが落ちるリスクはあるが、404よりはマシ)
+            const originalPath = path.join(__dirname, safePath);
+            if (fs.existsSync(originalPath)) {
+                console.warn(`★モバイル版が見つからないため元画像を返します: ${mobilePath}`);
+                res.sendFile(originalPath);
+            } else {
+                res.status(404).send('File not found');
+            }
+        }
+
+    } catch (error) {
+        console.error('API Error:', error);
+        res.status(500).send('Server Error');
+    }
+});
+
 const normalizeString = (str) => {
     if (typeof str !== 'string') return '';
     return str.replace(/[-_.\s]/g, '').toLowerCase();
