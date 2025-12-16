@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>KIRINUKI RG for PC</title>
+    <title>KIRINUKI RGC</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -482,6 +482,12 @@
             background-color: var(--card-bg);
             border-radius: 0;
             transition: transform 0.2s;
+            
+            /* ▼▼▼ スマホでの長押しメニュー(保存)を無効化 ▼▼▼ */
+            -webkit-touch-callout: none; /* iOSで長押しメニューを出さない */
+            -webkit-user-select: none;   /* 選択を防ぐ */
+            user-select: none;
+            pointer-events: auto;        /* タップ(ホバー拡大)は許可する */
         }
         .recovery-preview-img:hover {
             transform: scale(2.0); /* ホバーで少し大きく確認できるように */
@@ -861,6 +867,34 @@
         border: 1px solid var(--primary-color);
     }
 
+    /* ▼▼▼ プレミアムボタン (超高解像モード用) のスタイル ▼▼▼ */
+        .button-group button.premium {
+            /* ゴールドのグラデーション背景 */
+            background: linear-gradient(45deg, #cc9900, #ffcc00, #ffdb4d, #cc9900);
+            background-size: 300% 100%; /* アニメーション用にサイズを大きく */
+            color: #000000; /* 文字は黒で視認性確保 */
+            border: 1px solid #b8860b;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ホバー時のきらめき効果 */
+        .button-group button.premium:hover {
+            background-position: 100% 0; /* グラデーションを動かす */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); /* 金色の発光 */
+            transform: translateY(-2px);
+            border-color: #ffd700;
+        }
+
+        /* クリック時 */
+        .button-group button.premium:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+        }
+
     /* Dangerボタン (ライトモード) */
     body.light-mode .button-group button.danger {
         background-color: var(--primary-color); 
@@ -932,7 +966,6 @@
             width: 100%;
             height: auto;
             display: block; 
-            pointer-events: none; 
         }
         #appTitle .logo-video-light {
             display: none;
@@ -1306,7 +1339,7 @@
             cursor: grabbing;
         }
 
-    /* ▼▼▼ スマホ対応用CSS追加 ▼▼▼ */
+    /* ▼▼▼ スマホ対応用CSS ▼▼▼ */
         #previewCanvas {
             touch-action: none; /* ブラウザのスクロールやズームを無効化 */
             -webkit-touch-callout: none; /* iOSで長押しメニューを出さない */
@@ -1378,30 +1411,43 @@
                 data-image-jp-light="picture/step1_jp_light.png" 
                 data-image-en-dark="picture/step1_en_dark.png" 
                 data-image-en-light="picture/step1_en_light.png">?</span> 
-            <h2 data-lang-jp="Step 1: トークンID入力" 
-                data-lang-en="Step 1: Enter Token ID">
-                ステップ1: トークンID入力
+            <h2 data-lang-jp="Step 1: トークンID検索" 
+                data-lang-en="Step 1: Token ID Search">
+                ステップ1: トークンID検索
             </h2>
             
             <input type="text" id="tokenIdInput" placeholder="トークンIDを入力" 
                    data-lang-placeholder-jp="KRGのトークンIDを半角数字(例：#1なら1)で入力" 
                    data-lang-placeholder-en="Enter the Token ID of the KRG (e.g., 1 for #1)">
             <div class="button-group">
-                <button id="fetchDataBtn" data-lang-jp="トークンデータ取得" data-lang-en="Fetch Token Data">トークンデータ取得</button>
-                
                 <button id="fetchDataLightBtn" 
-                    data-lang-jp="軽量モードで取得" 
-                    data-lang-en="Lightweight Mode"
-                    title="4K解像度で処理を行い、メモリ使用量を抑えます">
-                    軽量モードで取得 (4K)
+                    data-lang-jp="通常モードで検索" 
+                    data-lang-en="Search (Normal Mode)"
+                    title="4K解像度で処理します（推奨）"
+                    data-lang-title-jp="4K解像度で処理します（推奨）"
+                    data-lang-title-en="Processes in 4K resolution (Recommended).">
+                    通常モードで検索
                 </button>
+
                 <button id="fetchDataMobileBtn" 
-                    data-lang-jp="スマホモードで取得" 
-                    data-lang-en="Mobile Mode"
-                    title="スマホ向けに解像度を抑えて処理します">
-                    スマホモード
+                    data-lang-jp="スマホモードで検索" 
+                    data-lang-en="Search (Mobile Mode)"
+                    title="スマホ向けに軽量化して処理します"
+                    data-lang-title-jp="スマホ向けに軽量化して処理します"
+                    data-lang-title-en="Optimized for smartphones.">
+                    スマホモードで検索
                 </button>
-                </div>
+
+                <button id="fetchDataBtn" 
+                    class=""
+                    data-lang-jp="超高解像モードで検索" 
+                    data-lang-en="Search (Ultra-High-Res)"
+                    title="オリジナル解像度(16K)で処理します。ハイスペックPC専用です。"
+                    data-lang-title-jp="オリジナル解像度(16K)で処理します。ハイスペックPC専用です。"
+                    data-lang-title-en="Processes in original resolution (16K). High-spec PC only.">
+                    超高解像モードで検索
+                </button>
+            </div>
             <div id="statusMessage1"></div>
         </div>
         
@@ -1646,13 +1692,16 @@
                     data-lang-alt-en="Help Image"
                 >
                 <h2 data-lang-jp="KIRINUKI RG へようこそ" data-lang-en="Welcome to KIRINUKI RG">KIRINUKI RG へようこそ</h2>
-                <p data-lang-jp="KIRINUKI RGは、KRGの二次的な活用を支援するためのPC専用画像切り抜きツールです。以下の5つのStepで、簡単に切り抜き画像を作成できます。"
+                <p data-lang-jp="KIRINUKI RGは、KRGの二次的な活用を支援するための画像切り抜きツールです。以下の5つのStepで、簡単に切り抜き画像を作成できます。"
                    data-lang-en="KIRINUKI RG is a PC-only image masking tool to support the secondary use of KRG. You can easily create masked images in the following 5 steps.">
                    KIRINUKI RGは、KRGの二次的な活用を支援するための画像切り抜きツールです。以下の5つのStepで、簡単に高解像度の切り抜き画像を作成できます。
                 </p>
 
-                <h3 data-lang-jp="Step 1: トークンID入力" data-lang-en="Step 1: Enter Token ID">Step 1: パーツ情報の自動解析</h3>
-                <p data-lang-jp="トークンIDを入力するだけで、KRGのパーツ情報を自動で読み込みます。" data-lang-en="Simply enter the Token ID to automatically load all part information for the KRG.">トークンIDを入力するだけで、KRGのパーツ情報を自動で読み込みます。</p>
+                <h3 data-lang-jp="Step 1: トークンID検索" data-lang-en="Step 1: Token ID Search">Step 1: パーツ情報の自動解析</h3>
+                <p data-lang-jp="トークンIDを検索して、KRGのパーツ情報を自動で読み込みます。" 
+                   data-lang-en="Search for the Token ID to automatically load the KRG part information.">
+                   トークンIDを検索して、KRGのパーツ情報を自動で読み込みます。
+                </p>
 
                 <h3 data-lang-jp="Step 2: 切り抜き条件選択" data-lang-en="Step 2: Select Masking Options">Step 2: 自動切り抜き</h3>
                 <p data-lang-jp="切り抜き条件を選ぶだけで、複雑なレイヤーマスクを自動で合成し切り抜き画像を作成できます。" 
@@ -1702,9 +1751,12 @@
                         </button>
                     </a>
                 </div>
-                <p data-lang-jp="[更新日 : 2025年12月14日]" data-lang-en="[Last updated: December 14, 2025]">
+                <p data-lang-jp="[更新日 : 2025年12月16日]" data-lang-en="[Last updated: December 16, 2025]">
                 <ul>
                     <li data-lang-jp="#225, #462, #1635, #2651はKRG画像自体に不具合があり、切り抜き範囲がずれています。" data-lang-en="For #225, #462, #1635, and #2651, the masking area is misaligned due to defects in the KRG images themselves."></li>
+                    <li data-lang-jp="スマホモードを実装しました。" data-lang-en=""></li>
+                    <li data-lang-jp="Step 1 のUIを改善しました。" data-lang-en=""></li>
+                    <li data-lang-jp="通常モード(旧 : 軽量モード)の処理を最適化しました。"data-lang-en=""></li>
                 </ul>
                 <br>
 
@@ -1751,9 +1803,9 @@
                 </div>
 
             <div data-help-id="step1" class="hidden">
-                <h2 data-lang-jp="Step 1: トークンID入力" data-lang-en="Step 1: Enter Token ID">Step 1: トークンID入力</h2>
-                <p data-lang-jp="このStepでは、入力されたトークンIDをもとにKRGのパーツ情報を読み込みます。" 
-                data-lang-en="In this step, the KRG's part information is loaded based on the entered Token ID."></p>
+                <h2 data-lang-jp="Step 1: トークンID検索" data-lang-en="Step 1: Token ID Search">Step 1: トークンID検索</h2>
+                <p data-lang-jp="このStepでは、入力されたトークンIDを検索してKRGのパーツ情報を読み込みます。" 
+                data-lang-en="In this step, the KRG's part information is loaded by searching for the entered Token ID."></p>
                 <br>
                 <h3 data-lang-jp="a. KRGのトークンIDの確認" data-lang-en="a. KRG Token ID Confirmation"></h3>
                 <p data-lang-jp="OpenseaやMetaMask等、保有しているKRGを確認できるサイトでトークンIDを確認します。
@@ -1776,11 +1828,11 @@
 				data-lang-alt-en="Help Image"
 				>
                 <br>
-                <h3 data-lang-jp="b. トークンデータの取得" data-lang-en="b. Fetching Token Data"></h3>
-                <p data-lang-jp="トークンIDを半角数字で入力し、[トークンデータ取得] をクリック。
-                                <br>GPU負荷を低減したい場合は [軽量モードで取得] をクリック。" 
-                   data-lang-en="Enter the Token ID using half-width numbers and click [Fetch Token Data].
-                                <br>Click [Lightweight Mode] to reduce GPU load."></p>
+                <h3 data-lang-jp="b. トークンデータの検索" data-lang-en="b. Fetching Token Data"></h3>
+                <p data-lang-jp="トークンIDを半角数字で入力し、検索ボタンをクリック。
+                                <br>基本的には通常モードを推奨します。スマホの場合はスマホモードを選択してください。超高解像モードはGPU負荷が非常に高いため、マシンパワーが低いとwebページがクラッシュします。" 
+                   data-lang-en="Enter the Token ID using half-width numbers and click the search button.
+                                <br>Standard Mode is recommended for general use. For smartphones, select Smartphone Mode. Ultra High-Res Mode places a very high load on the GPU, so if your machine has low power, the web page may crash."></p>
                 <img 
 				src="" 
 				alt="ヘルプ用画像" 
@@ -2081,6 +2133,8 @@
         const fetchDataLightBtn = document.getElementById('fetchDataLightBtn');
         const fetchDataMobileBtn = document.getElementById('fetchDataMobileBtn'); 
         let isMobileMode = false; // スマホモードフラグ
+        let isUltraHighResMode = false; // 超高解像モードフラグ
+        let isProgrammaticPause = false; // システムが一時停止させたフラグ
         
         // モーダル関連要素
         const resultModalOverlay = document.getElementById('resultModalOverlay');
@@ -2199,32 +2253,31 @@
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-        // ▼▼▼ 全ての画像読み込みを一元管理し、スマホ時はAPI経由にする ▼▼▼
+        // ▼▼▼ 画像読み込み一元管理 (4K / Mobile 対応) ▼▼▼
         const loadImage = (url) => new Promise((res, rej) => {
             let loadUrl = url;
 
-            // ■ スマホモードかつ、ローカルアセットへのアクセスの場合はAPIを経由させる
-            if (isMobileMode && (url.startsWith('/assets/') || url.startsWith('/recovery_assets/'))) {
-                // サーバー側の '/api/get-resized-asset' に、本来欲しかったパスを渡す
-                // サーバーが勝手に mobile_assets フォルダを見に行ってくれる
-                loadUrl = `/api/get-resized-asset?path=${encodeURIComponent(url)}`;
+            // ローカルアセットの場合のみAPI経由にするか判定
+            if (url.startsWith('/assets/') || url.startsWith('/recovery_assets/')) {
+                
+                if (isMobileMode) {
+                    // スマホモード -> スマホ用軽量画像 (mobile_assets)
+                    loadUrl = `/api/get-resized-asset?path=${encodeURIComponent(url)}&type=mobile`;
+                } else if (!isUltraHighResMode) {
+                    // スマホでも超高解像でもない ＝ 「通常(4K)モード」 -> 4K画像 (4k_assets)
+                    loadUrl = `/api/get-resized-asset?path=${encodeURIComponent(url)}&type=4k`;
+                }
+                // 超高解像モード(isUltraHighResMode)の場合は、そのままのURLでオリジナル(16K)を読み込む
             }
 
             const img = new Image();
             img.crossOrigin = 'anonymous';
             
             img.onload = () => {
-                // ロジック内で src プロパティを使って判定している箇所（例外処理など）のために、
-                // APIのURLではなく、元のパス(url)をプロパティとして持たせておく
-                if (isMobileMode) {
+                // ロジック内で src プロパティを使って判定している箇所のために、元のパスを保持
+                // (スマホモード または 通常4Kモード の場合にセット)
+                if (isMobileMode || !isUltraHighResMode) {
                     img.originalSrc = url; 
-                    // 念のため src 属性自体は変えず、dataset等を使う手もあるが、
-                    // 既存ロジックが img.src を読んでいる場合、
-                    // サーバーが返す画像自体はバイナリなので、img.src はAPIのURLのままになる。
-                    // 既存コードの decodeURIComponent(img.src).includes(...) 対策として、
-                    // 読み込み完了後にJSオブジェクト上で src を偽装するのはリスクがあるため、
-                    // 判定ロジック側で `img.originalSrc || img.src` を見るようにするのがベストだが、
-                    // 簡易修正として「判定用」にこれを持たせる。
                 }
                 res(img);
             };
@@ -2248,24 +2301,44 @@
         }
         
         // ボタンクリックイベント設定
-        fetchDataBtn.addEventListener('click', () => executeFetchProcess(false, false));      // 通常
-        fetchDataLightBtn.addEventListener('click', () => executeFetchProcess(true, false));  // 軽量
-        fetchDataMobileBtn.addEventListener('click', () => executeFetchProcess(false, true)); // スマホモード
+        // 1. 通常モードで検索 (旧軽量ボタン) -> 4K画像を使用 (isLightMode=true)
+        fetchDataLightBtn.addEventListener('click', () => executeFetchProcess(true, false)); 
         
-        // ▼▼▼ 保存サイズプルダウンを復元する関数 ▼▼▼
+        // 2. スマホモードで検索 -> Mobile画像を使用 (isMobile=true)
+        fetchDataMobileBtn.addEventListener('click', () => executeFetchProcess(false, true)); 
+        
+        // 3. 超高解像モードで検索 (旧通常ボタン) -> オリジナル画像を使用 (両方false)
+        fetchDataBtn.addEventListener('click', () => executeFetchProcess(false, false));
+        
+        // ▼▼▼ 保存サイズプルダウンを復元する関数 (修正版) ▼▼▼
         function restoreSaveSizeOptions() {
             saveSizeSelect.disabled = false;
-            // 既存のHTMLと同じ構造でリセット
+            // 1. まずHTML構造をリセット (データ属性に翻訳テキストを持たせておく)
             saveSizeSelect.innerHTML = `
-                <option value="16384" data-lang-jp="最高 (16384px)" data-lang-en="Max (16384px)">オリジナル (16384px)</option>
+                <option value="16384" data-lang-jp="最大 (16384px)" data-lang-en="Max (16384px)">最大 (16384px)</option>
                 <option value="3840" data-lang-jp="4K (3840px)" data-lang-en="4K (3840px)">4K (3840px)</option>
                 <option value="2560" data-lang-jp="QHD (2560px)" data-lang-en="QHD (2560px)">QHD (2560px)</option>
                 <option value="1920" data-lang-jp="FHD (1920px)" data-lang-en="FHD (1920px)">FHD (1920px)</option>
                 <option value="1080" data-lang-jp="HD (1080px, NFT Original)" data-lang-en="HD (1080px, NFT Original)">HD (1080px, NFT Original)</option>
             `;
-            // 言語設定を再適用 (簡易的に現在の言語でテキスト更新)
+            
+            // 2. 現在の言語設定を取得し、即座にテキストを書き換える
             const currentLang = localStorage.getItem('language') || 'jp';
-            // setLanguage(currentLang); // ※もしsetLanguageがスコープ外ならこの行は不要、表示時に更新されます
+            const options = saveSizeSelect.querySelectorAll('option');
+            
+            options.forEach(opt => {
+                if (currentLang === 'en') {
+                    // 英語モードなら data-lang-en の内容を表示
+                    if (opt.hasAttribute('data-lang-en')) {
+                        opt.textContent = opt.getAttribute('data-lang-en');
+                    }
+                } else {
+                    // 日本語モードなら data-lang-jp の内容を表示
+                    if (opt.hasAttribute('data-lang-jp')) {
+                        opt.textContent = opt.getAttribute('data-lang-jp');
+                    }
+                }
+            });
         }
         
         // 共通処理関数
@@ -2273,6 +2346,8 @@
         async function executeFetchProcess(isLightMode, isMobile = false) {
             // ▼▼▼ 受け取った値をグローバル変数にセットする ▼▼▼
             isMobileMode = isMobile;
+            // モバイルでもなく、ライト(4K)指定でもない場合 ＝ 超高解像(Ultra)
+            isUltraHighResMode = !isMobile && !isLightMode;
 
             const tokenId = tokenIdInput.value;
             const tokenIdNum = Number(tokenId);
@@ -2464,26 +2539,7 @@
                 let width = largestMask ? largestMask.width : nftImage.width;
                 let height = largestMask ? largestMask.height : nftImage.height;
 
-                // ▼▼▼ リサイズ計算処理 ▼▼▼
-                if (isMobileMode) {
-                    const MOBILE_SIZE = 1080; // スマホ用の安全サイズ
-                    if (width > MOBILE_SIZE) {
-                        const aspect = height / width;
-                        width = MOBILE_SIZE;
-                        height = Math.round(MOBILE_SIZE * aspect);
-                        console.log(`★ スマホモード: サイズを縮小しました -> ${width}x${height}`);
-                    }
-                } else if (isLightMode) {
-                    const TARGET_SIZE = 3840;
-                    if (width > TARGET_SIZE) {
-                        const aspect = height / width;
-                        width = TARGET_SIZE;
-                        height = Math.round(TARGET_SIZE * aspect);
-                        console.log(`★ 軽量モード: サイズを縮小しました -> ${width}x${height}`);
-                    }
-                } else {
-                    console.log(`★ 通常モード: オリジナル解像度を使用します (${width}x${height})`);
-                }
+                console.log(`★ 処理解像度: ${width}x${height} (Mobile:${isMobileMode}, Ultra:${isUltraHighResMode})`);
 
                 // オフスクリーンキャンバス(処理用)のサイズ確定
                 offscreenCanvas.width = width;
@@ -3075,8 +3131,8 @@
             const scale = offscreenCanvas.width / rect.width; 
             const mobileScale = isMobileMode ? 4 : 1;
 
-            // ★ 頂点の判定優先度（吸い付きやすさ）は残しておくと便利です
-            const vertexHitBuffer = VERTEX_HIT_BUFFER * (isMobileMode ? 2.5 : 1.5); 
+            // ★ 頂点の判定優先度（吸い付きやすさ）
+            const vertexHitBuffer = VERTEX_HIT_BUFFER * (isMobileMode ? 5.0 : 1.5); 
             
             // 判定半径の計算 (DPR削除)
             const vertexHitRadiusSq = Math.pow(((VERTEX_DRAW_SIZE * mobileScale) + vertexHitBuffer) * scale, 2);
@@ -4769,7 +4825,7 @@
                     let newPanX = touch.clientX - startPanX;
                     let newPanY = touch.clientY - startPanY;
 
-                    // ▼▼▼ 移動範囲の制限 (Clamp) を追加 ▼▼▼
+                    // ▼▼▼ 移動範囲の制限 (Clamp) ▼▼▼
                     if (zoomLevel <= 80) {
                         newPanX = 0;
                         newPanY = 0;
@@ -4794,7 +4850,7 @@
         previewCanvas.addEventListener('touchend', (e) => {
             clearTimeout(longPressTimer);
             
-            // ▼▼▼ 図形追加モードで「タップ」された場合の処理を追加 ▼▼▼
+            // ▼▼▼ 図形追加モードで「タップ」された場合の処理 ▼▼▼
             if (isAddingShapeMode && !hasMoved && !isMultiTouch && !draggingVertex && !isPanning) {
                 // タップされた位置を取得 (touchendではtouchesが空なのでchangedTouchesを使う)
                 const touch = e.changedTouches[0];
@@ -5022,23 +5078,63 @@
             });
         }
             // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-            // ▼▼▼ 動画の最終フレーム停止ロジック ▼▼▼
+            // ▼▼▼ 動画の最終フレーム停止＆ポインターロック制御ロジック ▼▼▼
             // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
             
             const videoDark = document.querySelector('.logo-video-dark');
             const videoLight = document.querySelector('.logo-video-light');
+            
+            // 動画操作のロック/解除を制御するヘルパー関数
+            const setVideoPointerEvents = (videoElement, isLocked) => {
+                if (videoElement) {
+                    // isLocked=true なら、操作をブロック (保存・PiPを防ぐ)
+                    if (isLocked) {
+                        videoElement.style.pointerEvents = 'none';
+                    } else {
+                        // isLocked=false なら、操作を許可 (モバイル再生ボタンを許可)
+                        videoElement.style.pointerEvents = 'auto';
+                    }
+                }
+            };
 
+            // ロック制御のイベントリスナーを設定する関数
+            const setupVideoLocking = (videoElement) => {
+                if (!videoElement) return;
+
+                // 1. 初期状態: ロックを解除 (モバイル再生ボタンを押せるように)
+                setVideoPointerEvents(videoElement, false);
+
+                // 2. 再生開始時: ロックを有効 (保存やPiPを防ぐ)
+                videoElement.addEventListener('playing', () => {
+                    setVideoPointerEvents(videoElement, true);
+                });
+                
+                // 3. 一時停止時 (ユーザー操作 or システム停止)
+                videoElement.addEventListener('pause', () => {
+                    if (isProgrammaticPause) {
+                        // システム停止 (最終フレーム停止ロジック) の場合
+                        setVideoPointerEvents(videoElement, true); // ロックを継続 (保存を防ぐ)
+                        isProgrammaticPause = false;               // フラグをリセット
+                    } else {
+                        // ユーザーが手動で一時停止した場合
+                        setVideoPointerEvents(videoElement, false); // ロックを解除 (再生を再度押せるように)
+                    }
+                });
+            };
+            
+            // 最終フレーム停止ロジック (プログラムからの操作であることをフラグで通知)
             const keepLastFrame = (videoElement) => {
                 if (!videoElement) return;
                 
                 // 'timeupdate' (再生時間が更新される) たびにチェック
                 videoElement.addEventListener('timeupdate', () => {
-                    // 動画の総再生時間 (duration) が取得できていて、
-                    // 現在の再生時間 (currentTime) が「ほぼ最後」 (終了0.1秒前) になったら
                     if (videoElement.duration && videoElement.currentTime >= videoElement.duration - 0.1) {
                         
-                        // 'ended' (再生終了) イベントが発火する前に、手動で 'pause' (一時停止) させる
-                        videoElement.pause();
+                        // フラグを立ててから pause() を呼び出す
+                        if (!videoElement.paused) { // 既に止まっていないか確認
+                            isProgrammaticPause = true; // 旗を立てる！
+                            videoElement.pause();
+                        }
                     }
                 });
                 
@@ -5049,8 +5145,11 @@
                 });
             };
 
+            // 起動時にすべての動画にロジックをセット
             keepLastFrame(videoDark);
             keepLastFrame(videoLight);
+            setupVideoLocking(videoDark);
+            setupVideoLocking(videoLight);
             
             const langJpBtn = document.getElementById('langJpBtn');
             const langEnBtn = document.getElementById('langEnBtn');
@@ -5081,14 +5180,12 @@
                     }
                 });
 
-                // 1b. [★特殊対応★] プレースホルダーを更新
+                // 1d. ツールチップ (title属性) を更新
                 const placeholdersToTranslate = document.querySelectorAll('[data-lang-placeholder-jp]');
                 placeholdersToTranslate.forEach(el => {
-                    if (lang === 'en') {
-                        el.placeholder = el.dataset.langPlaceholderEn || el.dataset.langPlaceholderJp;
-                    } else {
-                        el.placeholder = el.dataset.langPlaceholderJp;
-                    }
+                    const key = lang === 'en' ? 'data-lang-placeholder-en' : 'data-lang-placeholder-jp';
+                    const newPlaceholder = el.getAttribute(key) || el.placeholder;
+                    el.placeholder = newPlaceholder;
                 });
                 
                 // 1c. [★特殊対応★] 画像のaltテキストを更新
@@ -5170,8 +5267,7 @@
                 helpModal.scrollTop = 0;
             };
 
-            // モーダルを閉
-じる関数
+            // モーダルを閉じる関数
  
            const closeModal = () => {
                 helpModal.classList.remove('is-open');

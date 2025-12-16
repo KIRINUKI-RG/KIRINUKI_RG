@@ -115,36 +115,47 @@ app.get('/api/proxy-image', async (req, res) => {
     }
 });
 
-// ▼▼▼ スマホ用・軽量アセット配信API (事前生成版) ▼▼▼
+// ▼▼▼ 軽量アセット配信API (スマホ用 & 4K用) ▼▼▼
 app.get('/api/get-resized-asset', async (req, res) => {
-    const { path: targetPath } = req.query;
+    const { path: targetPath, type } = req.query; // type: 'mobile' or '4k'
     if (!targetPath) return res.status(400).send('Path is required');
 
     try {
         const safePath = decodeURIComponent(targetPath).replace(/\.\./g, '');
         
-        // 1. パスをモバイル用に書き換える
-        // 例: /assets/Face/xxx.png -> /mobile_assets/Face/xxx.png
-        let mobilePath = '';
+        let targetPrefix = '';
+        if (type === 'mobile') {
+            targetPrefix = 'mobile_';
+        } else if (type === '4k') {
+            targetPrefix = '4k_';
+        } else {
+            // タイプ指定が不正、または指定なしの場合はエラーにするか、デフォルト動作
+            // ここでは安全のためエラー
+            return res.status(400).send('Invalid type');
+        }
+
+        // パスの書き換えロジック
+        // 例: /assets/Face/xxx.png -> /4k_assets/Face/xxx.png
+        // 例: /recovery_assets/xxx.png -> /4k_recovery_assets/xxx.png
+        let resizedPath = '';
         if (safePath.startsWith('/assets/')) {
-            mobilePath = safePath.replace('/assets/', '/mobile_assets/');
+            resizedPath = safePath.replace('/assets/', `/${targetPrefix}assets/`);
         } else if (safePath.startsWith('/recovery_assets/')) {
-            mobilePath = safePath.replace('/recovery_assets/', '/mobile_recovery_assets/');
+            resizedPath = safePath.replace('/recovery_assets/', `/${targetPrefix}recovery_assets/`);
         } else {
              return res.status(403).send('Invalid path');
         }
 
-        const fullPath = path.join(__dirname, mobilePath);
+        const fullPath = path.join(__dirname, resizedPath);
 
-        // 2. モバイル版が存在すればそれを返す
+        // ファイルが存在すれば返す
         if (fs.existsSync(fullPath)) {
             res.sendFile(fullPath);
         } else {
-            // モバイル版が無い（生成漏れ等）場合は、仕方ないので元のデカい画像を返す
-            // (サーバーが落ちるリスクはあるが、404よりはマシ)
+            // 生成漏れ等の場合は元画像を返す (フォールバック)
             const originalPath = path.join(__dirname, safePath);
             if (fs.existsSync(originalPath)) {
-                console.warn(`★モバイル版が見つからないため元画像を返します: ${mobilePath}`);
+                console.warn(`★${type}版が見つからないため元画像を返します: ${resizedPath}`);
                 res.sendFile(originalPath);
             } else {
                 res.status(404).send('File not found');
@@ -577,7 +588,7 @@ app.get('/api/get-recovery-masks-by-layers', (req, res) => {
             console.log("★ ID 2331 例外: 特殊補完マスク (Under Hair / Hair And Hat) を追加しました。");
         }
         
-        console.log("★ Recovery: 補完マスクの検索結果:", masksByLayer); // デバッグログ追加
+        console.log("★ Recovery: 補完マスクの検索結果:", masksByLayer); // デバッグログ
         res.json({ maskUrlsByLayer: masksByLayer });
 
     } catch (error) {
