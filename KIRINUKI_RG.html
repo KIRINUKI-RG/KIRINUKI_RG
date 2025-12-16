@@ -2584,9 +2584,14 @@
                     for (const layer in source.obj) {
                         if (source.obj[layer]) source.obj[layer].forEach(img => {
                                 if (!img || !img.src) return; 
-                                const decodedSrc = decodeURIComponent(img.src);
+
+                                // ▼▼▼ originalSrc (元のパス) を優先してチェックする ▼▼▼
+                                const rawSrc = img.originalSrc || img.src; // API URL ではなく元パスを優先
+                                const decodedSrc = decodeURIComponent(rawSrc);
+
                                 if (decodedSrc && decodedSrc.includes(source.pathPart)) {
-                                    const fileName = img.src.split('/').pop();
+                                    // ファイル名取得も rawSrc から行う
+                                    const fileName = rawSrc.split('/').pop(); 
                                     const match = fileName.match(/^(?:.*_layer\d+_)?(.*)\.png$/i);
                                     if (match && match[1]) baseNamesToLoad.add(match[1]);
                                 }
