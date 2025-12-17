@@ -446,16 +446,33 @@
             color: #c0392b;
         }
 
+        /* 補完パーツコンテナの基本（にゅるっと動かすためのラッパー） */
         #recoveryPartsContainer {
             margin-top: 10px;
-            padding: 10px;
+            padding: 0 10px; /* 上下パディングはアニメーション側で制御 */
             background-color: var(--input-bg);
             border: none;
             border-radius: 0;
+            display: grid; /* Gridを使って高さをアニメーションさせる */
+            grid-template-rows: 0fr; /* 初期状態は高さ0 */
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s;
+            overflow: hidden;
+            min-height: 0; /* hidden時は0にする */
+        }
+
+        /* 補完パーツがある時に付与するクラス */
+        #recoveryPartsContainer.is-visible {
+            grid-template-rows: 1fr; /* 中身に合わせて広がる */
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* 内部のレイアウト */
+        .recovery-parts-wrapper {
+            min-height: 0;
             display: flex;
             align-items: center;
             gap: 15px;
-            min-height: 40px;
         }
         body:not(.light-mode) #recoveryPartsContainer {
             background-color: rgba(255, 255, 255, 0.05);
@@ -1476,10 +1493,12 @@
                 <button id="modeRecoveryBtn" class="secondary" data-lang-jp="補完モード" data-lang-en="Recovery Mode">補完モード</button>
                 </div>
 
-            <div id="recoveryPartsContainer" class="hidden">
-                <span class="recovery-parts-label" data-lang-jp="補完パーツ:" data-lang-en="Recovery Parts:">補完パーツ:</span>
-                <div id="recoveryPartsList" class="recovery-parts-list">
-                    </div>
+            <div id="recoveryPartsContainer">
+                <div class="recovery-parts-wrapper">
+                    <span class="recovery-parts-label" data-lang-jp="補完パーツ:" data-lang-en="Recovery Parts:">補完パーツ:</span>
+                    <div id="recoveryPartsList" class="recovery-parts-list">
+                        </div>
+                </div>
             </div>
 
             <div id="strayHairControl" class="hidden">
@@ -1763,12 +1782,9 @@
                 <h3 data-lang-jp="FAQ" data-lang-en="FAQ">FAQ</h3>
                 <p data-lang-jp="Q. <br>サイトにアクセスしたときに、変な画面が表示される。<br>
                     A. <br>これはサーバー再起動時の待機画面であり、仕様です。このWebアプリはRenderという無料サーバーを利用しています。サーバー運用最適化のため、最終アクセスから約15分経過すると自動的にサーバーが閉じ、新規アクセスに対してはサーバー起動待機画面が表示されるようになります。
-                    
-                    <br><br>Q.<br>スマホで利用を試みたが、エラーが出たり処理が進まなかったりした。
-                    <br>A. <br>本ツールはPC専用です。スマホでは正常に動作しませんので、PCでの利用をお願いいたします。
 
                     <br><br>Q. <br>トークンID取得が完了したのに、KRG画像が表示されない。
-                    <br>A. GPUの処理能力によっては正しく進行しない場合があります。十分なGPU処理能力を確保したうえで、もう一度トークンID取得ボタンをクリックしてください。
+                    <br>A. <br>GPUの処理能力によっては正しく進行しない場合があります。十分なGPU処理能力を確保したうえで、もう一度トークンID取得ボタンをクリックしてください。
                     
                     <br><br>Q. <br>特定の切り抜きモードを選択したのに、異なった切り抜き範囲が表示される。
                     <br>A. <br>GPUの処理能力によっては、切り抜き範囲を指定するレイヤー処理が正しく完了しない場合があります。十分なGPU処理能力を確保したうえで、もう一度切り抜きモードを選択してください。
@@ -1783,12 +1799,12 @@
                     data-lang-en="Q. <br>I see a weird screen when I access the site.
                     <br>A. <br>This is a waiting screen for the server to restart, which is by design. This web app uses a free server (Render). To optimize server operation, the server automatically shuts down after about 20 minutes of inactivity. When new access occurs, this server startup waiting screen will be displayed.
                     
-                    <br><br>Q.<br>I tried to use it on my smartphone, but I got an error or the process didn't proceed.
-                    <br>A. <br>This tool is PC-only. It does not function properly on smartphones, so please use a PC.
-
                     <br><br>Q. <br>The KRG image doesn't appear even after fetching the Token ID.
                     <br>A. <br>Processing may not proceed correctly depending on your GPU's capabilities. Please ensure you have sufficient GPU power and try clicking the Fetch Token Data button again.
                     
+                    <br><br>Q. <br>Even though I selected a specific masking mode, a different masking area is displayed.
+                    <br>A. <br>Depending on your GPU's capabilities, the layer processing that specifies the masking area may not complete correctly. Please ensure you have sufficient GPU power and try selecting the masking mode again.
+
                     <br><br>Q. <br>The background color is bleeding into the outline of the masked image.
                     <br>A. <br>This is by design. KRG artworks appear to have undergone lossy compression, causing background colors to randomly bleed into the edges of black outlines. While the tool is designed to mask the cleanest area possible, strong color bleeding may occur depending on the compression. Additionally, there are areas where outlines do not match the fill, or where no outline exists, causing slight variations in the masking.
                     
@@ -1864,7 +1880,7 @@
 				data-lang-alt-en="Help Image"
 				>
                 <br>
-                <h3 data-lang-jp="切り抜き範囲の選択" data-lang-en="Select Masking Area"></h3>
+                <h3 data-lang-jp="切り抜き範囲指定" data-lang-en="Select Masking Area"></h3>
                 <p data-lang-jp="[頭系]
                 <br>人物の頭部に関連するパーツを残して切り抜きます。
                 <br><br>[頭系＋体系]
@@ -1892,7 +1908,7 @@
 				data-lang-alt-en="Help Image"
 				>
                 <br>
-                <h3 data-lang-jp="切り抜きモードの選択" data-lang-en="Mask Mode Selection"></h3>
+                <h3 data-lang-jp="切り抜きモード指定" data-lang-en="Mask Mode Selection"></h3>
                 <p data-lang-jp="[切り抜き]
                 <br>指定された切り抜き範囲を忠実に透過処理します。一部のパーツは不自然な切り抜かれ方をしますが、補完切り抜きやマニュアル切り抜きで対応できます。"
                 data-lang-en="[Masking]
@@ -2020,7 +2036,10 @@
             </div>
             <div data-help-id="step5" class="hidden">
                 <h2 data-lang-jp="Step 5: 画像の保存" data-lang-en="Step 5: Save Image">Step 5 のヘルプ</h2>
-                <p data-lang-jp="このStepでは、解像度を指定して画像を保存できます。" data-lang-en="In this step, you can specify the resolution to save the image.">（ここにStep5用の説明文をHTMLで書く）</p>
+                <p data-lang-jp="このStepでは、解像度を指定して画像を保存できます。
+                                <br>通常モードで検索した場合は最高3840pxまで、スマホモードで検索した場合は1080pxに固定されます。" 
+                    data-lang-en="In this step, you can specify the resolution to save the image.
+                                <br>When searching in normal mode, the maximum resolution is 3840px, and when searching in smartphone mode, it is fixed at 1080px."></p>
                 <img 
 				src="" 
 				alt="ヘルプ用画像" 
@@ -2043,8 +2062,8 @@
         <div id="closeResultHandle" class="modal-handle-bar"></div>
         <div id="resultContent" style="flex-grow: 1; overflow-y: auto; padding: 20px; text-align: center;">
             <h2 data-lang-jp="画像の保存" data-lang-en="Save Image">画像の保存</h2>
-            <p data-lang-jp="以下の画像を長押しして、「写真に保存」を選択してください。" 
-               data-lang-en="Long-press the image below and select 'Save to Photos'.">
+            <p data-lang-jp="以下の画像を長押しして保存してください。" 
+               data-lang-en="Long-press the image below.">
                以下の画像を長押しして、「写真に保存」を選択してください。
             </p>
             <div id="resultImageContainer" style="margin-top: 20px; margin-bottom: 50px;">
@@ -3632,28 +3651,23 @@
             applyTransparency(isRecovery);
         });
 
-        // ▼▼▼ 補完パーツのプレビューを更新する関数 ▼▼▼
+        // ▼▼▼ 補完パーツのプレビューを更新する関数 (修正版) ▼▼▼
         function updateRecoveryPartsPreview(mode) {
             const container = document.getElementById('recoveryPartsContainer');
             const list = document.getElementById('recoveryPartsList');
             list.innerHTML = ''; 
 
-            // 表示対象の画像URLリスト
             let imagesToShow = [];
             const tokenId = tokenIdInput.value;
 
-            // 1. recoveryImgs (APIから取得した補完画像) から、Headモード用の特定の画像を集める
+            // 1. 補完アセットの収集ロジック (既存通り)
             let headRecoveryAssets = [];
-            
-            // recoveryImgs は { layerName: [img, img...] } の形なのでフラットにする
             for (const layer in recoveryImgs) {
                 if (Array.isArray(recoveryImgs[layer])) {
                     recoveryImgs[layer].forEach(img => {
                         if (img && img.src) {
-                            // ▼▼▼ スマホ対応パス取得 ▼▼▼
                             const rawSrc = img.originalSrc || img.src;
                             const src = decodeURIComponent(rawSrc);
-                            
                             if (src.includes('/Body Layer/') || 
                                 src.includes('/Face Accessories/') || 
                                 src.includes('/Head/') ||
@@ -3666,63 +3680,38 @@
                 }
             }
 
-            // 2. モードごとの表示ロジック
             if (mode === 'head') {
-                // ・recovery_assets内の特定画像
                 imagesToShow.push(...headRecoveryAssets);
-                // ・face shield Black
-                if (isFaceShieldBlackException) {
-                    imagesToShow.push('/assets/Exception/FaceShiledBlack.png');
-                }
-
+                if (isFaceShieldBlackException) imagesToShow.push('/assets/Exception/FaceShiledBlack.png');
             } else if (mode === 'headBody') {
-                // ・Umbrella
-                if (isUmbrellaException && tokenId) {
-                    imagesToShow.push(`/assets/Exception/Umbrella_${tokenId}.png`);
-                }
-                // ・face shield Black
-                if (isFaceShieldBlackException) {
-                    imagesToShow.push('/assets/Exception/FaceShiledBlack.png');
-                }
-
+                if (isUmbrellaException && tokenId) imagesToShow.push(`/assets/Exception/Umbrella_${tokenId}.png`);
+                if (isFaceShieldBlackException) imagesToShow.push('/assets/Exception/FaceShiledBlack.png');
             } else if (mode === 'headBodyBg') {
-                // ・IV (最背面なので先頭に追加)
-                if (isIVException) {
-                    imagesToShow.push('/assets/Exception/IV.png');
-                }
-                // ・face shield Black
-                if (isFaceShieldBlackException) {
-                    imagesToShow.push('/assets/Exception/FaceShiledBlack.png');
-                }
-                // ・Umbrella
-                if (isUmbrellaException && tokenId) {
-                    imagesToShow.push(`/assets/Exception/Umbrella_${tokenId}.png`);
-                }
+                if (isIVException) imagesToShow.push('/assets/Exception/IV.png');
+                if (isFaceShieldBlackException) imagesToShow.push('/assets/Exception/FaceShiledBlack.png');
+                if (isUmbrellaException && tokenId) imagesToShow.push(`/assets/Exception/Umbrella_${tokenId}.png`);
             }
 
-            // 3. 重複排除
             imagesToShow = [...new Set(imagesToShow)];
 
-            // 4. DOM生成
+            // 2. ★にゅるっとアニメーションの制御
             if (imagesToShow.length > 0) {
-                container.classList.remove('hidden');
+                // 画像を生成
                 imagesToShow.forEach(src => {
                     const img = document.createElement('img');
                     img.src = src;
                     img.className = 'recovery-preview-img';  
-                    // ▼▼▼ 右クリック禁止 (保存防止) ▼▼▼
-                    img.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                    });
-                    // ロードエラー時は非表示にする
+                    img.addEventListener('contextmenu', (e) => e.preventDefault());
                     img.onerror = () => { img.style.display = 'none'; };
-                    
                     list.appendChild(img);
                 });
+                // コンテナを表示状態にする
+                container.classList.add('is-visible');
             } else {
-                container.classList.add('hidden');
+                // コンテナを隠す
+                container.classList.remove('is-visible');
             }
-        } 
+        }
 
         async function applyTransparency(isRecovery = false) {
             if (!nftImage) {
